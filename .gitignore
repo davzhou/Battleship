@@ -61,6 +61,7 @@ local.properties
 *-html/war/**
 !*-html/war/WEB-INF/
 !*-html/war/WEB-INF/lib/
+!*-html/war/WEB-INF/lib/*
 !*-html/war/WEB-INF/web.xml
 *-html/.gwt
 ############
