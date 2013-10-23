@@ -13,8 +13,8 @@ target/
 
 #Android
 ############
-my-gdx-game-android/gen/
-my-gdx-game-android/bin/
+*/gen/
+*/bin/
 # built application files
 *.apk
 *.ap_
@@ -41,6 +41,7 @@ tmp/**
 *~.nib
 local.properties
 .settings/*.prefs
+*/.settings/*.prefs
 .loadpath
 .externalToolBuilders/
 
@@ -54,11 +55,11 @@ local.properties
 .buildpath
 ############
 
-*-desktop/.settings/
-*-desktop/bin/
-*-html/.settings/
+#Others
+############
 *-html/gwt-unitCache/
 *-html/war/WEB-INF/classes/
 *-html/war/WEB-INF/deploy/
 *-html/war/assets/
 *-html/war/
+############
