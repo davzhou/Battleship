@@ -58,8 +58,9 @@ local.properties
 #Others
 ############
 *-html/gwt-unitCache/
-*-html/war/WEB-INF/classes/
-*-html/war/WEB-INF/deploy/
-*-html/war/assets/
-*-html/war/
+*-html/war/**
+!*-html/war/WEB-INF/
+!*-html/war/WEB-INF/lib/
+!*-html/war/WEB-INF/web.xml
+*-html/.gwt
 ############
