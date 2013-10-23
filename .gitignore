@@ -35,7 +35,6 @@ proguard/
 .metadata
 bin/**
 tmp/**
-tmp/**/*
 *.tmp
 *.bak
 *.swp
@@ -43,9 +42,6 @@ tmp/**/*
 local.properties
 .settings/*.prefs
 .loadpath
-.classpath
-
-# External tool builders
 .externalToolBuilders/
 
 # Locally stored "Eclipse launch configurations"
