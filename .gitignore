@@ -64,4 +64,5 @@ local.properties
 !*-html/war/WEB-INF/lib/*
 !*-html/war/WEB-INF/web.xml
 *-html/.gwt
+*-ios/
 ############
