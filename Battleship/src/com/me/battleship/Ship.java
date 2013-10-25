@@ -1,15 +1,14 @@
 package com.me.battleship;
 
-public class Ship {
+public class Ship extends Base_Object {
 
-    int column, row, shipClass;
+    int shipClass;
     Globals.Orientation orientation;
 
-    Ship(int x, int y, int c, Globals.Orientation o){
-        row=x;
-        column=y;
-        shipClass=c;
-        orientation=o;
+    Ship(int x, int y, int c, Globals.Orientation o) {
+        super(x, y);
+        shipClass = c;
+        orientation = o;
     }
 
 }
