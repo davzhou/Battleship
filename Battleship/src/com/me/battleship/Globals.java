@@ -13,4 +13,8 @@ public class Globals {
     public static enum Orientation {
         VERTICAL, HORIZONTAL
     }
+
+    public static enum AttackStatus {
+        HIT, MISS
+    }
 }
