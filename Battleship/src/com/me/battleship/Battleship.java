@@ -13,8 +13,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Battleship implements ApplicationListener {
     private OrthographicCamera camera;
     private SpriteBatch batch;
-    private Texture texture;
-    private Sprite sprite;
+    private Texture background;
+    private Texture board;
+    private Sprite bg_sprite;
+    private Sprite board_sprite;
 
     @Override
     public void create() {
@@ -24,21 +26,31 @@ public class Battleship implements ApplicationListener {
         camera = new OrthographicCamera(1, h/w);
         batch = new SpriteBatch();
 
-        texture = new Texture(Gdx.files.internal("data/libgdx.png"));
-        texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+        background = new Texture(Gdx.files.internal("data/board/sea_bg.png"));
+        background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+        board = new Texture(Gdx.files.internal("data/board/grid_2.png"));
+        board.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
-        TextureRegion region = new TextureRegion(texture, 0, 0, 512, 275);
+        TextureRegion bg_region = new TextureRegion(background, 0, 0, 1024, 768);
+        TextureRegion board_region = new TextureRegion(board, 0, 0, 950, 950);
 
-        sprite = new Sprite(region);
-        sprite.setSize(0.9f, 0.9f * sprite.getHeight() / sprite.getWidth());
-        sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
-        sprite.setPosition(-sprite.getWidth()/2, -sprite.getHeight()/2);
+        bg_sprite = new Sprite(bg_region);
+        bg_sprite.setSize(1.0f, 1.0f * bg_sprite.getHeight() / bg_sprite.getWidth());
+        bg_sprite.setOrigin(bg_sprite.getWidth()/2, bg_sprite.getHeight()/2);
+        bg_sprite.setPosition(-bg_sprite.getWidth()/2, -bg_sprite.getHeight()/2);
+
+        board_sprite = new Sprite(board_region);
+        //board_sprite.setSize(.7f, .7f * board_sprite.getHeight() / board_sprite.getWidth());
+        board_sprite.setSize(.6f, .6f);
+        //board_sprite.setOrigin(bg_sprite.getWidth()/2, bg_sprite.getHeight()/2);
+        board_sprite.setOrigin(0,0);
+        board_sprite.setPosition(-board_sprite.getWidth()*3/4, -board_sprite.getHeight()/2);
     }
 
     @Override
     public void dispose() {
         batch.dispose();
-        texture.dispose();
+        background.dispose();
     }
 
     @Override
@@ -48,7 +60,8 @@ public class Battleship implements ApplicationListener {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        sprite.draw(batch);
+        bg_sprite.draw(batch);
+        board_sprite.draw(batch);
         batch.end();
     }
 
