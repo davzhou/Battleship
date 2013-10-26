@@ -43,13 +43,16 @@ public class Board {
     }
 
     int attackLocation(int x, int y) {
-        torpedoes.add(new Torpedo(x, y));
+
         if (myGrid[x][y] < 0) // any negative square has already been targeted
                               // before
             return 0;
-        else if (myGrid[x][y] == 0) // empty square
+        else if (myGrid[x][y] == 0){ // empty square
+            torpedoes.add(new Torpedo(x, y, Globals.AttackStatus.MISS));
             return 1;
+        }
         else { // square has ship
+            torpedoes.add(new Torpedo(x, y, Globals.AttackStatus.HIT));
             boolean gameFinished = true;
             for (int i = 0; i < 10 && gameFinished; i++)
                 for (int j = 0; j < 10; j++)
