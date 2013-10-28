@@ -5,8 +5,8 @@ public class Ship extends BaseObject {
     int shipClass;
     Globals.Orientation orientation;
 
-    Ship(int x, int y, int c, Globals.Orientation o) {
-        super(x,y);
+    Ship(float x, float y, float w, float h, int c, Globals.Orientation o) {
+        super(x, y, w, h);
         shipClass = c;
         orientation = o;
     }

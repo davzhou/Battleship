@@ -1,10 +1,13 @@
 package com.me.battleship;
 
 public abstract class BaseObject {
-    int column, row;
+    float x, y, width, height;
 
-    public BaseObject(int x, int y) {
-        column = x;
-        row = y;
+
+    public BaseObject(float x_coord, float y_coord, float w, float h) {
+        x = x_coord;
+        y = y_coord;
+        width = w;
+        height = h;
     }
 }
