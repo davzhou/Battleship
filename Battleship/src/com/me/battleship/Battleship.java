@@ -44,8 +44,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
         // background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
         // board = new Texture(Gdx.files.internal("data/board/grid_2.png"));
         // board.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-        t = new Torpedo(50f, 50f, Globals.TORPEDO_SIZE_WIDTH,
-                Globals.TORPEDO_SIZE_HEIGHT, Globals.AttackStatus.HIT);
+        t = new Torpedo(50f, 50f, Globals.AttackStatus.HIT);
         //
         // TextureRegion bg_region = new TextureRegion(background, 0, 0, 1024,
         // 768);

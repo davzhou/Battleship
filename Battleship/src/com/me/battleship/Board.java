@@ -39,7 +39,7 @@ public class Board {
             for (int i = 0; i < shipClass; i++)
                 myGrid[x][y + i] = shipClass;
         }
-        ships.add(new Ship(x, y, 10, 10, shipClass, ori));//gotta change thsi later
+        ships.add(new Ship(x, y, shipClass, ori));//gotta change thsi later
     }
 
     int attackLocation(int x, int y) {
@@ -48,11 +48,11 @@ public class Board {
                               // before
             return 0;
         else if (myGrid[x][y] == 0){ // empty square
-            torpedoes.add(new Torpedo(x, y, Globals.TORPEDO_SIZE_WIDTH, Globals.TORPEDO_SIZE_WIDTH, Globals.AttackStatus.MISS));
+            torpedoes.add(new Torpedo(x, y, Globals.AttackStatus.MISS));
             return 1;
         }
         else { // square has ship
-            torpedoes.add(new Torpedo(x, y, Globals.TORPEDO_SIZE_WIDTH, Globals.TORPEDO_SIZE_WIDTH, Globals.AttackStatus.HIT));
+            torpedoes.add(new Torpedo(x, y, Globals.AttackStatus.HIT));
             boolean gameFinished = true;
             for (int i = 0; i < 10 && gameFinished; i++)
                 for (int j = 0; j < 10; j++)
