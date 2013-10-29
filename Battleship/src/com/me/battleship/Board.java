@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Board {
 
-    List<Ship> ships;
-    List<Torpedo> torpedoes;
+    public List<Ship> ships;
+    public List<Torpedo> torpedoes;
     int[][] myGrid;
     int[][] enemyGrid;
     int turns;
@@ -18,9 +18,17 @@ public class Board {
         turns = 0;
         active = false;
         name = n;
-        emptyBoard();
+
         ships = new ArrayList<Ship>();
         torpedoes = new ArrayList<Torpedo>();
+
+        for (int i=0; i<Globals.numShips; i++){
+            ships.add(new Ship(i, Globals.Orientation.HORIZONTAL));
+        }
+
+        for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 10; j++)
+                myGrid[i][j] = Globals.EMPTY;
     }
 
     void emptyBoard() {

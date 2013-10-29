@@ -10,4 +10,6 @@ public abstract class BaseObject {
         x = x_coord;
         y = y_coord;
     }
+
+    public BaseObject(){    }
 }

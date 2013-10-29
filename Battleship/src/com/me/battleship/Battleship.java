@@ -21,11 +21,12 @@ public class Battleship implements ApplicationListener, InputProcessor {
     private Sprite bg_sprite;
     private Sprite board_sprite;
 
-    private boolean being_dragged;
+    private Board Player1;
+
+    private BaseObject being_dragged;
 
     @Override
     public void create() {
-        being_dragged = false;
         camera = new OrthographicCamera(Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
         // Set it to an orthographic projection with "y down" (the first boolean
@@ -68,6 +69,8 @@ public class Battleship implements ApplicationListener, InputProcessor {
         // board_sprite.setPosition(-board_sprite.getWidth()*3/4,
         // -board_sprite.getHeight()/2);
 
+        Player1 = new Board("Player1");
+
         Gdx.input.setInputProcessor(this);
     }
 
@@ -84,6 +87,10 @@ public class Battleship implements ApplicationListener, InputProcessor {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+        for (int i = 0; i < Player1.ships.size(); i++)
+            batch.draw(Player1.ships.get(i).tex, Player1.ships.get(i).x,
+                    Player1.ships.get(i).y, Player1.ships.get(i).width,
+                    Player1.ships.get(i).height);
         // bg_sprite.draw(batch);
         // board_sprite.draw(batch);
         batch.draw(t.tex, t.x, t.y, t.width, t.height);
@@ -124,19 +131,23 @@ public class Battleship implements ApplicationListener, InputProcessor {
 
     @Override
     public boolean touchUp(int x, int y, int pointer, int button) {
-        if (being_dragged) {
-            being_dragged = false;
-            return true;
-        }
+        being_dragged=null;
         return false;
     }
 
     @Override
     public boolean touchDragged(int x, int y, int pointer) {
-        if (being_dragged||x > t.x && x < t.x + t.width && y > t.y && y < t.y + t.height) {
-            being_dragged = true;
-            t.x = x - t.width / 2;
-            t.y = y - t.height / 2;
+        if (being_dragged == null) {
+            for (int i=0; i<Player1.ships.size(); i++)
+            if (dragged(Player1.ships.get(i), x, y)) {
+
+                Player1.ships.get(i).x = x - Player1.ships.get(i).width / 2;
+                Player1.ships.get(i).y = y - Player1.ships.get(i).height / 2;
+            }
+        }
+        else {
+            being_dragged.x=x-being_dragged.width/2;
+            being_dragged.y=y-being_dragged.height/2;
         }
         return true;
     }
@@ -149,6 +160,15 @@ public class Battleship implements ApplicationListener, InputProcessor {
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         // TODO Auto-generated method stub
+        return false;
+    }
+
+    boolean dragged(BaseObject o, int x, int y) {
+        if ( x > o.x && x < o.x + o.width && y > o.y
+                && y < o.y + o.height) {
+            being_dragged = o;
+            return true;
+        }
         return false;
     }
 }
