@@ -1,10 +1,15 @@
 package com.me.battleship;
 
-public abstract class BaseObject {
-    int column, row;
+import com.badlogic.gdx.graphics.Texture;
 
-    public BaseObject(int x, int y) {
-        column = x;
-        row = y;
+public abstract class BaseObject {
+    float x, y, width, height;
+    Texture tex;
+
+    public BaseObject(float x_coord, float y_coord) {
+        x = x_coord;
+        y = y_coord;
     }
+
+    public BaseObject(){    }
 }

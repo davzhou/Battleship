@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Board {
 
-    List<Ship> ships;
-    List<Torpedo> torpedoes;
+    public List<Ship> ships;
+    public List<Torpedo> torpedoes;
     int[][] myGrid;
     int[][] enemyGrid;
     private int size;
@@ -20,9 +20,17 @@ public class Board {
         turns = 0;
         isActive = false;
         name = n;
-        emptyBoard();
+
         ships = new ArrayList<Ship>();
         torpedoes = new ArrayList<Torpedo>();
+
+        for (int i=0; i<Globals.numShips; i++){
+            ships.add(new Ship(Globals.shipsRequired[i], Globals.Orientation.HORIZONTAL));
+        }
+
+        for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 10; j++)
+                myGrid[i][j] = Globals.EMPTY;
     }
 
     void emptyBoard() {
@@ -41,17 +49,20 @@ public class Board {
             for (int i = 0; i < shipClass; i++)
                 myGrid[x][y + i] = shipClass;
         }
-        ships.add(new Ship(x, y, shipClass, ori));
+        ships.add(new Ship(x, y, shipClass, ori));//gotta change thsi later
     }
 
     int attackLocation(int x, int y) {
-        torpedoes.add(new Torpedo(x, y));
+
         if (myGrid[x][y] < 0) // any negative square has already been targeted
                               // before
             return 0;
-        else if (myGrid[x][y] == 0) // empty square
+        else if (myGrid[x][y] == 0){ // empty square
+            torpedoes.add(new Torpedo(x, y, Globals.AttackStatus.MISS));
             return 1;
+        }
         else { // square has ship
+            torpedoes.add(new Torpedo(x, y, Globals.AttackStatus.HIT));
             boolean gameFinished = true;
             for (int i = 0; i < 10 && gameFinished; i++)
                 for (int j = 0; j < 10; j++)
