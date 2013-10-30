@@ -23,7 +23,7 @@ public class Board {
         torpedoes = new ArrayList<Torpedo>();
 
         for (int i=0; i<Globals.numShips; i++){
-            ships.add(new Ship(i, Globals.Orientation.HORIZONTAL));
+            ships.add(new Ship(Globals.shipsRequired[i], Globals.Orientation.HORIZONTAL));
         }
 
         for (int i = 0; i < 10; i++)
