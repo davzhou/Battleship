@@ -21,9 +21,11 @@ public class Drawer {
     private OrthographicCamera camera;
     private SpriteBatch batch;
     private ArrayList<Sprite> sprites;
+    private Board p1Board;
 
 
     public Drawer(Board board){
+        p1Board = board;
         camera = new OrthographicCamera(Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
         // Set it to an orthographic projection with "y down"
@@ -95,6 +97,12 @@ public class Drawer {
                     */
         for (Sprite sprite : sprites) {
             sprite.draw(batch);
+        }
+
+        for (int i = 0; i < p1Board.ships.size(); i++) {
+            batch.draw(p1Board.ships.get(i).tex, p1Board.ships.get(i).x,
+                    p1Board.ships.get(i).y, p1Board.ships.get(i).width,
+                    p1Board.ships.get(i).height);
         }
 
         batch.end();
