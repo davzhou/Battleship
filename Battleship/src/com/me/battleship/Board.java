@@ -9,14 +9,16 @@ public class Board {
     List<Torpedo> torpedoes;
     int[][] myGrid;
     int[][] enemyGrid;
+    private int size;
     int turns;
-    boolean active;
+    boolean isActive;
     String name;
 
-    Board(String n) {
-        myGrid = new int[10][10];
+    Board(String n, int gridSize) {
+        myGrid = new int[gridSize][gridSize];
+        size = gridSize;
         turns = 0;
-        active = false;
+        isActive = false;
         name = n;
         emptyBoard();
         ships = new ArrayList<Ship>();
@@ -67,5 +69,9 @@ public class Board {
 
     void setEnemy(int[][] e) {
         enemyGrid = e;
+    }
+
+    public int getSize() {
+        return size;
     }
 }
