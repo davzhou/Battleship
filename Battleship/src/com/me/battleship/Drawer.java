@@ -1,6 +1,9 @@
 package com.me.battleship;
 
 import com.badlogic.gdx.Gdx;
+
+import com.badlogic.gdx.graphics.GL10;
+
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -22,6 +25,11 @@ public class Drawer {
     private SpriteBatch batch;
     private ArrayList<Sprite> sprites;
     private Board p1Board;
+
+
+    //test section
+    Texture test_square;
+    float TILE_SIZE;
 
 
     public Drawer(Board board){
@@ -59,8 +67,12 @@ public class Drawer {
         //sprites.add(p2GridBorder);
 
         //draw tiles
+
+        test_square = new Texture(Gdx.files.internal("data/board/black_border.png"));
         float boardSize = board.getSize();
         float tileSize = p1GridBorder.getWidth() / boardSize;
+        TILE_SIZE=tileSize;//test
+
         Sprite tile;
         for (int x = 0; x < boardSize; x++) {
             for (int y = 0; y < boardSize; y++) {
@@ -85,6 +97,9 @@ public class Drawer {
 
 
     public void draw(){
+
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         /*
@@ -95,8 +110,16 @@ public class Drawer {
                     player1.ships.get(i).y, player1.ships.get(i).width,
                     player1.ships.get(i).height);
                     */
-        for (Sprite sprite : sprites) {
+        /*
+for (Sprite sprite : sprites) {
             sprite.draw(batch);
+        }*/
+//test section
+        for (int x = 0; x < p1Board.getSize(); x++) {
+            for (int y = 0; y < p1Board.getSize(); y++) {
+                batch.draw(test_square, x*TILE_SIZE + 25, y*TILE_SIZE + 100, TILE_SIZE, TILE_SIZE);
+            }
+
         }
 
         for (int i = 0; i < p1Board.ships.size(); i++) {
