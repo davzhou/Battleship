@@ -5,17 +5,21 @@ import java.util.List;
 
 public class Board {
 
-    public List<Ship> ships;
-    public List<Torpedo> torpedoes;
+    List<Ship> ships;
+    List<Torpedo> torpedoes;
     int[][] myGrid;
     int[][] enemyGrid;
+    boolean[][] selectedSquares;
     private int size;
     int turns;
     boolean isActive;
     String name;
+    int gridSize;
 
-    Board(String n, int gridSize) {
+    Board(String n, int gSize) {
+        gridSize=gSize;
         myGrid = new int[gridSize][gridSize];
+        selectedSquares=new boolean[gridSize][gridSize];
         size = gridSize;
         turns = 0;
         isActive = false;
@@ -25,24 +29,37 @@ public class Board {
         torpedoes = new ArrayList<Torpedo>();
 
         for (int i=0; i<Globals.numShips; i++){
-            ships.add(new Ship(Globals.shipsRequired[i], Globals.Orientation.HORIZONTAL));
+            ships.add(new Ship(Globals.shipsRequired[i], Globals.HORIZONTAL));
         }
 
-        for (int i = 0; i < 10; i++)
-            for (int j = 0; j < 10; j++)
-                myGrid[i][j] = Globals.EMPTY;
+        for (int i = 0; i < gridSize; i++)
+            for (int j = 0; j < gridSize; j++){
+                selectedSquares[i][j]=false;
+            }
     }
 
     void emptyBoard() {
-        for (int i = 0; i < 10; i++)
-            for (int j = 0; j < 10; j++)
+        for (int i = 0; i < gridSize; i++)
+            for (int j = 0; j < gridSize; j++)
                 myGrid[i][j] = Globals.EMPTY;
         ships.clear();
+
+        for (int i = 0; i < gridSize; i++)
+            for (int j = 0; j < gridSize; j++){
+                selectedSquares[i][j]=false;
+            }
     }
 
-    void placeShip(int x, int y, int shipClass, Globals.Orientation ori) {
+    void clearSelectedSquares(){
+        for (int i = 0; i < gridSize; i++)
+            for (int j = 0; j < gridSize; j++){
+                selectedSquares[i][j]=false;
+            }
+    }
 
-        if (ori == Globals.Orientation.VERTICAL) {
+    void placeShip(int x, int y, int shipClass, int ori) {
+
+        if (ori == Globals.VERTICAL) {
             for (int i = 0; i < shipClass; i++)
                 myGrid[x + i][y] = shipClass;
         } else {

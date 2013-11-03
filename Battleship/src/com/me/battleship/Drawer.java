@@ -13,12 +13,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import java.util.ArrayList;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Huyson
- * Date: 10/30/13
- * Time: 4:20 AM
- * To change this template use File | Settings | File Templates.
- * handles all the graphics?
+ * Created with IntelliJ IDEA. User: Huyson Date: 10/30/13 Time: 4:20 AM To
+ * change this template use File | Settings | File Templates. handles all the
+ * graphics?
  */
 public class Drawer {
     private OrthographicCamera camera;
@@ -26,13 +23,12 @@ public class Drawer {
     private ArrayList<Sprite> sprites;
     private Board p1Board;
 
-
-    //test section
+    // test section
     Texture test_square;
+    Texture Selected_Square_Texture;
     float TILE_SIZE;
 
-
-    public Drawer(Board board){
+    public Drawer(Board board) {
         p1Board = board;
         camera = new OrthographicCamera(Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
@@ -47,91 +43,125 @@ public class Drawer {
         batch.setProjectionMatrix(camera.combined);
         sprites = new ArrayList<Sprite>();
 
-        //background
+        // background
         Sprite bg = createSprite("data/board/sea_bg.png", 1024, 768);
-        //bgSprite.setSize(1.0f * bgSprite.getWidth(), 1.0f * bgSprite.getHeight());
-        //bgSprite.setOrigin(bgSprite.getWidth() / 2, bgSprite.getHeight() / 2);
-        //bgSprite.setPosition(-bgSprite.getWidth()/2, -bgSprite.getHeight()/2);
-        bg.setPosition(0,0);
+        // bgSprite.setSize(1.0f * bgSprite.getWidth(), 1.0f *
+        // bgSprite.getHeight());
+        // bgSprite.setOrigin(bgSprite.getWidth() / 2, bgSprite.getHeight() /
+        // 2);
+        // bgSprite.setPosition(-bgSprite.getWidth()/2,
+        // -bgSprite.getHeight()/2);
+        bg.setPosition(0, 0);
         sprites.add(bg);
 
-        //create border
-        Sprite p1GridBorder = createSprite("data/board/large_teal_border.png", 512, 512);
+        // create border
+        Sprite p1GridBorder = createSprite("data/board/large_teal_border.png",
+                512, 512);
         p1GridBorder.setSize(screenHeight * .75f, screenHeight * .75f);
-        //bgSprite.setOrigin(bgSprite.getWidth() / 2, bgSprite.getHeight() / 2);
-        //bgSprite.setPosition(-bgSprite.getWidth()/2, -bgSprite.getHeight()/2);
+        // bgSprite.setOrigin(bgSprite.getWidth() / 2, bgSprite.getHeight() /
+        // 2);
+        // bgSprite.setPosition(-bgSprite.getWidth()/2,
+        // -bgSprite.getHeight()/2);
         p1GridBorder.setPosition(25, 100);
         sprites.add(p1GridBorder);
-        //Sprite p2GridBorder = new Sprite(p1GridBorder);
-        //p2GridBorder.setPosition(screenWidth - p1GridBorder.getX() - p2GridBorder.getWidth(), p1GridBorder.getY());
-        //sprites.add(p2GridBorder);
+        // Sprite p2GridBorder = new Sprite(p1GridBorder);
+        // p2GridBorder.setPosition(screenWidth - p1GridBorder.getX() -
+        // p2GridBorder.getWidth(), p1GridBorder.getY());
+        // sprites.add(p2GridBorder);
 
-        //draw tiles
+        // draw tiles
 
-        test_square = new Texture(Gdx.files.internal("data/board/black_border.png"));
+        test_square = new Texture(
+                Gdx.files.internal("data/board/black_border.png"));
+
+        Selected_Square_Texture = new Texture(Gdx.files.internal("data/board/selected_square.png"));
         float boardSize = board.getSize();
         float tileSize = p1GridBorder.getWidth() / boardSize;
-        TILE_SIZE=tileSize;//test
+        TILE_SIZE = Globals.GridSize/Globals.GridDimensions;// test
 
         Sprite tile;
         for (int x = 0; x < boardSize; x++) {
             for (int y = 0; y < boardSize; y++) {
                 tile = createSprite("data/board/black_border.png", 64, 64);
                 tile.setSize(tileSize, tileSize);
-                tile.setPosition(x*tileSize + p1GridBorder.getX(), y*tileSize + p1GridBorder.getY());
+                tile.setPosition(x * tileSize + p1GridBorder.getX(), y
+                        * tileSize + p1GridBorder.getY());
                 sprites.add(tile);
-                //tile = createSprite("data/board/black_border.png", 64, 64);
-                //tile.setSize(tileSize, tileSize);
-                //tile.setPosition(x*tileSize + p2GridBorder.getX(), y*tileSize + p2GridBorder.getY());
-                //sprites.add(tile);
+                // tile = createSprite("data/board/black_border.png", 64, 64);
+                // tile.setSize(tileSize, tileSize);
+                // tile.setPosition(x*tileSize + p2GridBorder.getX(), y*tileSize
+                // + p2GridBorder.getY());
+                // sprites.add(tile);
             }
         }
     }
 
-    private Sprite createSprite(String texturePath, int width, int height){
+    private Sprite createSprite(String texturePath, int width, int height) {
         Texture texture = new Texture(Gdx.files.internal(texturePath));
         TextureRegion region = new TextureRegion(texture, width, height);
         return new Sprite(region);
 
     }
 
-
-    public void draw(){
+    public void draw() {
 
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         /*
-        batch.draw(board, Globals.GridLocation1.x, Globals.GridLocation1.y,
-                Globals.GridSize1.x, Globals.GridSize1.y);
-        for (int i = 0; i < player1.ships.size(); i++)
-            batch.draw(player1.ships.get(i).tex, player1.ships.get(i).x,
-                    player1.ships.get(i).y, player1.ships.get(i).width,
-                    player1.ships.get(i).height);
-                    */
+         * batch.draw(board, Globals.GridLocation1.x, Globals.GridLocation1.y,
+         * Globals.GridSize1.x, Globals.GridSize1.y); for (int i = 0; i <
+         * player1.ships.size(); i++) batch.draw(player1.ships.get(i).tex,
+         * player1.ships.get(i).x, player1.ships.get(i).y,
+         * player1.ships.get(i).width, player1.ships.get(i).height);
+         */
         /*
-for (Sprite sprite : sprites) {
-            sprite.draw(batch);
-        }*/
-//test section
+         * for (Sprite sprite : sprites) { sprite.draw(batch); }
+         */
+        // test section
         for (int x = 0; x < p1Board.getSize(); x++) {
             for (int y = 0; y < p1Board.getSize(); y++) {
-                batch.draw(test_square, x*TILE_SIZE + 25, y*TILE_SIZE + 100, TILE_SIZE, TILE_SIZE);
+                batch.draw(test_square, x * TILE_SIZE + Globals.GridLocation.x,
+                        y * TILE_SIZE + Globals.GridLocation.y, TILE_SIZE, TILE_SIZE);
+                if (p1Board.selectedSquares[x][y])
+                    batch.draw(Selected_Square_Texture, x * TILE_SIZE + Globals.GridLocation.x,
+                            y * TILE_SIZE + Globals.GridLocation.y, TILE_SIZE, TILE_SIZE);
             }
 
         }
+        batch.draw(test_square, Globals.RotateZoneLocation.x,
+                Globals.RotateZoneLocation.y, Globals.RotateZoneSize.x,
+                Globals.RotateZoneSize.y);
 
         for (int i = 0; i < p1Board.ships.size(); i++) {
-            batch.draw(p1Board.ships.get(i).tex, p1Board.ships.get(i).x,
-                    p1Board.ships.get(i).y, p1Board.ships.get(i).width,
-                    p1Board.ships.get(i).height);
+            switch (p1Board.ships.get(i).shipClass) {
+            case 0:
+                batch.draw(Globals.Frigate[p1Board.ships.get(i).orientation],
+                        p1Board.ships.get(i).x, p1Board.ships.get(i).y);
+
+                break;
+            case 1:
+            case 2:
+                batch.draw(Globals.Cruiser[p1Board.ships.get(i).orientation],
+                        p1Board.ships.get(i).x, p1Board.ships.get(i).y);
+
+                break;
+            case 3:
+            case 4:
+            default:
+                batch.draw(
+                        Globals.Battleship[p1Board.ships.get(i).orientation],
+                        p1Board.ships.get(i).x, p1Board.ships.get(i).y);
+
+                break;
+            }
         }
 
         batch.end();
     }
 
-    public void dispose(){
+    public void dispose() {
         batch.dispose();
     }
 
