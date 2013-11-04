@@ -26,7 +26,6 @@ public class Drawer {
     // test section
     Texture test_square;
     Texture Selected_Square_Texture;
-    float TILE_SIZE;
 
     public Drawer(Board board) {
         p1Board = board;
@@ -74,10 +73,10 @@ public class Drawer {
         test_square = new Texture(
                 Gdx.files.internal("data/board/black_border.png"));
 
-        Selected_Square_Texture = new Texture(Gdx.files.internal("data/board/selected_square.png"));
+        Selected_Square_Texture = new Texture(
+                Gdx.files.internal("data/board/selected_square.png"));
         float boardSize = board.getSize();
         float tileSize = p1GridBorder.getWidth() / boardSize;
-        TILE_SIZE = Globals.GridSize/Globals.GridDimensions;// test
 
         Sprite tile;
         for (int x = 0; x < boardSize; x++) {
@@ -103,7 +102,7 @@ public class Drawer {
 
     }
 
-    public void draw() {
+    public void draw(Ship beingDragged) {
 
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
@@ -122,14 +121,25 @@ public class Drawer {
         // test section
         for (int x = 0; x < p1Board.getSize(); x++) {
             for (int y = 0; y < p1Board.getSize(); y++) {
-                batch.draw(test_square, x * TILE_SIZE + Globals.GridLocation.x,
-                        y * TILE_SIZE + Globals.GridLocation.y, TILE_SIZE, TILE_SIZE);
-                if (p1Board.selectedSquares[x][y])
-                    batch.draw(Selected_Square_Texture, x * TILE_SIZE + Globals.GridLocation.x,
-                            y * TILE_SIZE + Globals.GridLocation.y, TILE_SIZE, TILE_SIZE);
+                batch.draw(test_square, x * Globals.TileSize
+                        + Globals.GridLocation.x, y * Globals.TileSize
+                        + Globals.GridLocation.y, Globals.TileSize,
+                        Globals.TileSize);
             }
 
         }
+
+        if (beingDragged != null)
+            for (int j = 0; j < beingDragged.ActiveSquares.length; j++)
+                if (beingDragged.ActiveSquares[j]) {
+                    batch.draw(Selected_Square_Texture,
+                            beingDragged.OnSquares[j].x * Globals.TileSize
+                                    + Globals.GridLocation.x,
+                            beingDragged.OnSquares[j].y * Globals.TileSize
+                                    + Globals.GridLocation.y, Globals.TileSize,
+                            Globals.TileSize);
+                }
+
         batch.draw(test_square, Globals.RotateZoneLocation.x,
                 Globals.RotateZoneLocation.y, Globals.RotateZoneSize.x,
                 Globals.RotateZoneSize.y);

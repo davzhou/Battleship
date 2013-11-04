@@ -16,6 +16,5 @@ public class Torpedo extends BaseObject {
         width=TORPEDO_SIZE_WIDTH;
         height=TORPEDO_SIZE_HEIGHT;
         status = s;
-        tex=new Texture(Gdx.files.internal("data/board/hit.png"));
     }
 }

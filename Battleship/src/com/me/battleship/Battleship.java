@@ -39,7 +39,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
     public void render() {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-        drawer.draw();
+        drawer.draw(beingDragged);
     }
 
     @Override
@@ -82,13 +82,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
                 && y < Globals.GridLocation.y + Globals.GridSize;
         if (beingDragged != null && timeDragged > .15f && onGrid) {
             beingDragged.locationSet = true;
-        } else if (beingDragged != null && onGrid) {
-            int temp_x, temp_y;
-            temp_x = (int) ((x - Globals.GridLocation.x) / (Globals.GridSize / Globals.GridDimensions));
-            temp_y = (int) ((y - Globals.GridLocation.y) / (Globals.GridSize / Globals.GridDimensions));
-            player1.selectedSquares[temp_x][temp_y] = false;
-            beingDragged.resetLocation();
-        } else if (beingDragged != null) {
+        }  else if (beingDragged != null) {
             beingDragged.resetLocation();
         } else {
             for (int i = 0; i < player1.ships.size(); i++)
@@ -134,23 +128,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
                             || beingDragged.y < Globals.RotateZoneLocation.y || beingDragged.y > Globals.RotateZoneLocation.y
                             + Globals.RotateZoneSize.y))
                 rotated = false;
-            else if (x > Globals.GridLocation.x
-                    && x < Globals.GridLocation.x + Globals.GridSize
-                    && y > Globals.GridLocation.y
-                    && y < Globals.GridLocation.y + Globals.GridSize) {
-                int temp_x, temp_y;
-                temp_x = (int) ((x - Globals.GridLocation.x) / (Globals.GridSize / Globals.GridDimensions));
-                temp_y = (int) ((y - Globals.GridLocation.y) / (Globals.GridSize / Globals.GridDimensions));
-                if (temp_x != tracker[0] || temp_y != tracker[1]) {
-                    player1.selectedSquares[tracker[0]][tracker[1]] = false;
-                }
-                player1.selectedSquares[temp_x][temp_y] = true;
-                tracker[0] = temp_x;
-                tracker[1] = temp_y;
-            } else {
-                player1.selectedSquares[tracker[0]][tracker[1]] = false;
-            }
-
+            player1.highlightSquares(x, y, beingDragged);
         }
         return true;
     }

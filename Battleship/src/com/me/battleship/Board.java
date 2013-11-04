@@ -9,7 +9,6 @@ public class Board {
     List<Torpedo> torpedoes;
     int[][] myGrid;
     int[][] enemyGrid;
-    boolean[][] selectedSquares;
     private int size;
     int turns;
     boolean isActive;
@@ -17,9 +16,9 @@ public class Board {
     int gridSize;
 
     Board(String n, int gSize) {
-        gridSize=gSize;
+        gridSize = gSize;
         myGrid = new int[gridSize][gridSize];
-        selectedSquares=new boolean[gridSize][gridSize];
+
         size = gridSize;
         turns = 0;
         isActive = false;
@@ -28,14 +27,11 @@ public class Board {
         ships = new ArrayList<Ship>();
         torpedoes = new ArrayList<Torpedo>();
 
-        for (int i=0; i<Globals.numShips; i++){
+        for (int i = 0; i < Globals.numShips; i++) {
             ships.add(new Ship(Globals.shipsRequired[i], Globals.HORIZONTAL));
         }
 
-        for (int i = 0; i < gridSize; i++)
-            for (int j = 0; j < gridSize; j++){
-                selectedSquares[i][j]=false;
-            }
+
     }
 
     void emptyBoard() {
@@ -44,18 +40,9 @@ public class Board {
                 myGrid[i][j] = Globals.EMPTY;
         ships.clear();
 
-        for (int i = 0; i < gridSize; i++)
-            for (int j = 0; j < gridSize; j++){
-                selectedSquares[i][j]=false;
-            }
+
     }
 
-    void clearSelectedSquares(){
-        for (int i = 0; i < gridSize; i++)
-            for (int j = 0; j < gridSize; j++){
-                selectedSquares[i][j]=false;
-            }
-    }
 
     void placeShip(int x, int y, int shipClass, int ori) {
 
@@ -66,7 +53,7 @@ public class Board {
             for (int i = 0; i < shipClass; i++)
                 myGrid[x][y + i] = shipClass;
         }
-        ships.add(new Ship(x, y, shipClass, ori));//gotta change thsi later
+        ships.add(new Ship(x, y, shipClass, ori));// gotta change thsi later
     }
 
     int attackLocation(int x, int y) {
@@ -74,11 +61,10 @@ public class Board {
         if (myGrid[x][y] < 0) // any negative square has already been targeted
                               // before
             return 0;
-        else if (myGrid[x][y] == 0){ // empty square
+        else if (myGrid[x][y] == 0) { // empty square
             torpedoes.add(new Torpedo(x, y, Globals.AttackStatus.MISS));
             return 1;
-        }
-        else { // square has ship
+        } else { // square has ship
             torpedoes.add(new Torpedo(x, y, Globals.AttackStatus.HIT));
             boolean gameFinished = true;
             for (int i = 0; i < 10 && gameFinished; i++)
@@ -102,4 +88,44 @@ public class Board {
     public int getSize() {
         return size;
     }
+
+    void highlightSquares(int x, int y, Ship s) {
+        int length = s.shipClass + 1;
+        int j = -(length - 1) / 2;
+        int temp_x, temp_y;
+        if (s.orientation == 0) {
+            temp_x = (int) ((x - Globals.TileSize / 2 - Globals.GridLocation.x) / Globals.TileSize);
+            temp_y = (int) ((y - Globals.GridLocation.y) / Globals.TileSize);
+            if (temp_y >= 0 && temp_y < Globals.GridDimensions) {
+                for (int i = 0; i < s.OnSquares.length; i++) {
+
+                    if (temp_x + j >= 0 && temp_x + j < Globals.GridDimensions) {
+                        s.OnSquares[i].x = temp_x + j;
+                        s.OnSquares[i].y = temp_y;
+                        s.ActiveSquares[i] = true;
+                    } else
+                        s.ActiveSquares[i] = false;
+                    j++;
+                }
+            } else
+                s.unselectSquares();
+        } else {
+            temp_x = (int) ((x - Globals.GridLocation.x) / Globals.TileSize);
+            temp_y = (int) ((y - Globals.TileSize / 2 - Globals.GridLocation.y) / Globals.TileSize);
+            if (temp_x >= 0 && temp_x < Globals.GridDimensions) {
+                for (int i = 0; i < s.OnSquares.length; i++) {
+
+                    if (temp_y + j >= 0 && temp_y + j < Globals.GridDimensions) {
+                        s.OnSquares[i].x = temp_x;
+                        s.OnSquares[i].y = temp_y+j;
+                        s.ActiveSquares[i] = true;
+                    } else
+                        s.ActiveSquares[i] = false;
+                    j++;
+                }
+            } else
+                s.unselectSquares();
+        }
+    }
+
 }
