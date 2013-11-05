@@ -122,8 +122,8 @@ public class Drawer {
         for (int x = 0; x < p1Board.getSize(); x++) {
             for (int y = 0; y < p1Board.getSize(); y++) {
                 batch.draw(test_square, x * Globals.TileSize
-                        + Globals.GridLocation.x, y * Globals.TileSize
-                        + Globals.GridLocation.y, Globals.TileSize,
+                        + Globals.GridTopLeft.x, y * Globals.TileSize
+                        + Globals.GridTopLeft.y, Globals.TileSize,
                         Globals.TileSize);
             }
 
@@ -134,38 +134,36 @@ public class Drawer {
                 if (beingDragged.ActiveSquares[j]) {
                     batch.draw(Selected_Square_Texture,
                             beingDragged.OnSquares[j].x * Globals.TileSize
-                                    + Globals.GridLocation.x,
+                                    + Globals.GridTopLeft.x,
                             beingDragged.OnSquares[j].y * Globals.TileSize
-                                    + Globals.GridLocation.y, Globals.TileSize,
+                                    + Globals.GridTopLeft.y, Globals.TileSize,
                             Globals.TileSize);
                 }
 
-        batch.draw(test_square, Globals.RotateZoneLocation.x,
-                Globals.RotateZoneLocation.y, Globals.RotateZoneSize.x,
+        batch.draw(test_square, Globals.RotateZoneTopLeft.x,
+                Globals.RotateZoneTopLeft.y, Globals.RotateZoneSize.x,
                 Globals.RotateZoneSize.y);
 
         for (int i = 0; i < p1Board.ships.size(); i++) {
+            TextureRegion temp_ship;
             switch (p1Board.ships.get(i).shipClass) {
             case 0:
-                batch.draw(Globals.Frigate[p1Board.ships.get(i).orientation],
-                        p1Board.ships.get(i).x, p1Board.ships.get(i).y);
+                temp_ship = Globals.Frigate[p1Board.ships.get(i).orientation];
 
                 break;
             case 1:
             case 2:
-                batch.draw(Globals.Cruiser[p1Board.ships.get(i).orientation],
-                        p1Board.ships.get(i).x, p1Board.ships.get(i).y);
-
+                temp_ship = Globals.Cruiser[p1Board.ships.get(i).orientation];
                 break;
             case 3:
             case 4:
             default:
-                batch.draw(
-                        Globals.Battleship[p1Board.ships.get(i).orientation],
-                        p1Board.ships.get(i).x, p1Board.ships.get(i).y);
-
+                temp_ship = Globals.Battleship[p1Board.ships.get(i).orientation];
                 break;
             }
+            batch.draw(temp_ship, p1Board.ships.get(i).TopLeft.x,
+                    p1Board.ships.get(i).TopLeft.y,
+                    p1Board.ships.get(i).Size.x, p1Board.ships.get(i).Size.y);
         }
 
         batch.end();

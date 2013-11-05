@@ -1,14 +1,12 @@
 package com.me.battleship;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
 public class Ship extends BaseObject {
 
-    static final Vector2[] ShipLocs = new Vector2[] { new Vector2(600f, 50f),
-            new Vector2(600f, 250f), new Vector2(900f, 250f),
-            new Vector2(800f, 50f), new Vector2(600f, 450f) };
+    static final Vector2[] ShipLocs = new Vector2[] { new Vector2(630f, 70f),
+            new Vector2(700f, 270f), new Vector2(850f, 270f),
+            new Vector2(880f, 70f), new Vector2(770f, 470f) };
     static final Vector2[] ShipSizes = new Vector2[] { new Vector2(Globals.TileSize, Globals.TileSize),
             new Vector2(Globals.TileSize*2, Globals.TileSize), new Vector2(Globals.TileSize*3, Globals.TileSize),
             new Vector2(Globals.TileSize*4, Globals.TileSize), new Vector2(Globals.TileSize*5, Globals.TileSize) };
@@ -34,8 +32,8 @@ public class Ship extends BaseObject {
     }
 
     void ShipInit(int c, int o) {
-        width = ShipSizes[c].x;
-        height = ShipSizes[c].y;
+        Size=new Vector2(ShipSizes[c]);
+        TopLeft=new Vector2(Center.x-Size.x/2, Center.y-Size.y/2);
         shipClass = c;
         orientation = o;
         originalOrientation = o;
@@ -47,10 +45,9 @@ public class Ship extends BaseObject {
         unselectSquares();
     }
 
-    void resetLocation() {
-        orientation = originalOrientation;
-        x = OriginalLocation.x;
-        y = OriginalLocation.y;
+    void reset() {
+        move(OriginalLocation.x, OriginalLocation.y);
+        resetOrientation();
         unselectSquares();
     }
 
@@ -59,4 +56,29 @@ public class Ship extends BaseObject {
             ActiveSquares[i] = false;
     }
 
+    void changeOrientation(){
+
+        orientation=(orientation+1)%2;
+        float temp=Size.x;
+        Size.x=Size.y;
+        Size.y=temp;
+        TopLeft.x=Center.x-Size.x/2;
+        TopLeft.y=Center.y-Size.y/2;
+
+    }
+
+    void resetOrientation(){
+        orientation=originalOrientation;
+        Size.x=ShipSizes[shipClass].x;
+        Size.y=ShipSizes[shipClass].y;
+        TopLeft.x=Center.x-Size.x/2;
+        TopLeft.y=Center.y-Size.y/2;
+    }
+
+    void move(float x, float y){
+        Center.x=x;
+        Center.y=y;
+        TopLeft.x=Center.x-Size.x/2;
+        TopLeft.y=Center.y-Size.y/2;
+    }
 }

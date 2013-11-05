@@ -1,13 +1,12 @@
 package com.me.battleship;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 
 public abstract class BaseObject {
-    float x, y, width, height;
+    Vector2 Center, TopLeft, Size;
 
-    public BaseObject(float x_coord, float y_coord) {
-        x = x_coord;
-        y = y_coord;
+    public BaseObject(float x, float y) {
+        Center=new Vector2(x, y);
     }
 
     public BaseObject(){    }

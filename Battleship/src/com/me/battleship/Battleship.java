@@ -4,7 +4,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 
 public class Battleship implements ApplicationListener, InputProcessor {
     private Torpedo t;// test
@@ -15,13 +15,11 @@ public class Battleship implements ApplicationListener, InputProcessor {
     private float timeDragged;
     private boolean rotated;
     private Drawer drawer;
-    private int[] tracker;
 
     @Override
     public void create() {
         timeDragged = 0f;
         rotated = false;
-        tracker = new int[] { 0, 0 };
         t = new Torpedo(50f, 50f, Globals.AttackStatus.HIT);
 
         player1 = new Board("player1", Globals.GridDimensions);
@@ -76,18 +74,17 @@ public class Battleship implements ApplicationListener, InputProcessor {
 
     @Override
     public boolean touchUp(int x, int y, int pointer, int button) {
-        boolean onGrid = x > Globals.GridLocation.x
-                && x < Globals.GridLocation.x + Globals.GridSize
-                && y > Globals.GridLocation.y
-                && y < Globals.GridLocation.y + Globals.GridSize;
+        boolean onGrid = Globals.insideRegion(x, y, Globals.GridTopLeft,
+                new Vector2(Globals.GridSize, Globals.GridSize));
         if (beingDragged != null && timeDragged > .15f && onGrid) {
             beingDragged.locationSet = true;
-        }  else if (beingDragged != null) {
-            beingDragged.resetLocation();
+            player1.centerShipOnGrid(beingDragged);
+        } else if (beingDragged != null) {
+            beingDragged.reset();
         } else {
             for (int i = 0; i < player1.ships.size(); i++)
                 if (touchedShip(player1.ships.get(i), x, y)) {
-                    player1.ships.get(i).resetLocation();
+                    player1.ships.get(i).reset();
                     return true;
                 }
         }
@@ -102,31 +99,19 @@ public class Battleship implements ApplicationListener, InputProcessor {
             for (int i = 0; i < player1.ships.size(); i++)
                 if (touchedShip(player1.ships.get(i), x, y)) {
                     beingDragged = player1.ships.get(i);
-                    player1.ships.get(i).x = x - player1.ships.get(i).width / 2;
-                    player1.ships.get(i).y = y - player1.ships.get(i).height
-                            / 2;
-
                     return true;
                 }
         } else {
             timeDragged += Gdx.graphics.getDeltaTime();
-            beingDragged.x = x - beingDragged.width / 2;
-            beingDragged.y = y - beingDragged.height / 2;
+            beingDragged.move(x, y);
             if (!rotated
-                    && beingDragged.x > Globals.RotateZoneLocation.x
-                    && beingDragged.x < Globals.RotateZoneLocation.x
-                            + Globals.RotateZoneSize.x
-                    && beingDragged.y > Globals.RotateZoneLocation.y
-                    && beingDragged.y < Globals.RotateZoneLocation.y
-                            + Globals.RotateZoneSize.y) {
+                    && Globals.insideRegion(x, y, Globals.RotateZoneTopLeft,
+                            Globals.RotateZoneSize)) {
                 rotated = true;
-                beingDragged.orientation = (beingDragged.orientation + 1) % 2;
+                beingDragged.changeOrientation();
             } else if (rotated
-                    && (beingDragged.x < Globals.RotateZoneLocation.x
-                            || beingDragged.x > Globals.RotateZoneLocation.x
-                                    + Globals.RotateZoneSize.x
-                            || beingDragged.y < Globals.RotateZoneLocation.y || beingDragged.y > Globals.RotateZoneLocation.y
-                            + Globals.RotateZoneSize.y))
+                    && !Globals.insideRegion(x, y, Globals.RotateZoneTopLeft,
+                            Globals.RotateZoneSize))
                 rotated = false;
             player1.highlightSquares(x, y, beingDragged);
         }
@@ -145,9 +130,6 @@ public class Battleship implements ApplicationListener, InputProcessor {
     }
 
     boolean touchedShip(Ship o, int x, int y) {
-        if (x > o.x && x < o.x + o.width && y > o.y && y < o.y + o.height) {
-            return true;
-        }
-        return false;
+        return Globals.insideRegion(x, y, o.TopLeft, o.Size);
     }
 }

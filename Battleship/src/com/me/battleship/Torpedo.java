@@ -1,8 +1,5 @@
 package com.me.battleship;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-
 public class Torpedo extends BaseObject {
 
     Globals.AttackStatus status;
@@ -13,8 +10,6 @@ public class Torpedo extends BaseObject {
 
     Torpedo(float x, float y, Globals.AttackStatus s) {
         super(x, y);
-        width=TORPEDO_SIZE_WIDTH;
-        height=TORPEDO_SIZE_HEIGHT;
         status = s;
     }
 }

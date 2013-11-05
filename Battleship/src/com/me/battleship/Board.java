@@ -31,7 +31,6 @@ public class Board {
             ships.add(new Ship(Globals.shipsRequired[i], Globals.HORIZONTAL));
         }
 
-
     }
 
     void emptyBoard() {
@@ -40,9 +39,7 @@ public class Board {
                 myGrid[i][j] = Globals.EMPTY;
         ships.clear();
 
-
     }
-
 
     void placeShip(int x, int y, int shipClass, int ori) {
 
@@ -94,8 +91,8 @@ public class Board {
         int j = -(length - 1) / 2;
         int temp_x, temp_y;
         if (s.orientation == 0) {
-            temp_x = (int) ((x - Globals.TileSize / 2 - Globals.GridLocation.x) / Globals.TileSize);
-            temp_y = (int) ((y - Globals.GridLocation.y) / Globals.TileSize);
+            temp_x = (int) ((x - Globals.TileSize / 2 - Globals.GridTopLeft.x) / Globals.TileSize);
+            temp_y = (int) ((y - Globals.GridTopLeft.y) / Globals.TileSize);
             if (temp_y >= 0 && temp_y < Globals.GridDimensions) {
                 for (int i = 0; i < s.OnSquares.length; i++) {
 
@@ -110,14 +107,14 @@ public class Board {
             } else
                 s.unselectSquares();
         } else {
-            temp_x = (int) ((x - Globals.GridLocation.x) / Globals.TileSize);
-            temp_y = (int) ((y - Globals.TileSize / 2 - Globals.GridLocation.y) / Globals.TileSize);
+            temp_x = (int) ((x - Globals.GridTopLeft.x) / Globals.TileSize);
+            temp_y = (int) ((y - Globals.TileSize / 2 - Globals.GridTopLeft.y) / Globals.TileSize);
             if (temp_x >= 0 && temp_x < Globals.GridDimensions) {
                 for (int i = 0; i < s.OnSquares.length; i++) {
 
                     if (temp_y + j >= 0 && temp_y + j < Globals.GridDimensions) {
                         s.OnSquares[i].x = temp_x;
-                        s.OnSquares[i].y = temp_y+j;
+                        s.OnSquares[i].y = temp_y + j;
                         s.ActiveSquares[i] = true;
                     } else
                         s.ActiveSquares[i] = false;
@@ -128,4 +125,28 @@ public class Board {
         }
     }
 
+    void centerShipOnGrid(Ship s) {
+        int temp_adjust;
+        float temp_adjust_half, x, y;
+        temp_adjust = (s.shipClass + 1) / 2;
+        float half_tile = .5f * Globals.TileSize;
+        temp_adjust_half = (s.shipClass + 1) % 2 * half_tile;
+        switch (s.orientation) {
+        case Globals.VERTICAL:
+            x = Globals.GridTopLeft.x + s.OnSquares[temp_adjust].x
+                    * Globals.TileSize + half_tile;
+            y = Globals.GridTopLeft.y + s.OnSquares[temp_adjust].y
+                    * Globals.TileSize + temp_adjust_half;
+            break;
+        case Globals.HORIZONTAL:
+        default:
+            x = Globals.GridTopLeft.x + s.OnSquares[temp_adjust].x
+                    * Globals.TileSize + temp_adjust_half;
+            y = Globals.GridTopLeft.y + s.OnSquares[temp_adjust].y
+                    * Globals.TileSize + half_tile;
+            break;
+
+        }
+        s.move(x, y);
+    }
 }
