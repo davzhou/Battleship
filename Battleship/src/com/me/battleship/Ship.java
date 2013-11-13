@@ -4,81 +4,111 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Ship extends BaseObject {
 
-    static final Vector2[] ShipLocs = new Vector2[] { new Vector2(630f, 70f),
-            new Vector2(700f, 270f), new Vector2(850f, 270f),
-            new Vector2(880f, 70f), new Vector2(770f, 470f) };
-    static final Vector2[] ShipSizes = new Vector2[] { new Vector2(Globals.TileSize, Globals.TileSize),
-            new Vector2(Globals.TileSize*2, Globals.TileSize), new Vector2(Globals.TileSize*3, Globals.TileSize),
-            new Vector2(Globals.TileSize*4, Globals.TileSize), new Vector2(Globals.TileSize*5, Globals.TileSize) };
+    public enum ShipClass {
+        PATROL(1),
+        FRIGATE(2),
+        DESTROYER(3),
+        BATTLESHIP(4),
+        CARRIER(5);
 
-    int shipClass;
-    Vector2 OriginalLocation;
-    Vector2[] OnSquares;
-    boolean[] ActiveSquares;
+        private int length;
 
-    boolean locationSet;
-    int orientation, originalOrientation;
+        public int getLength() {
+            return length;
+        }
 
-    Ship(float x, float y, int c, int o) {
-        super(x, y);
-        OriginalLocation = new Vector2(x, y);
-        ShipInit(c, o);
+        ShipClass(int length) {
+            this.length = length;
+        }
     }
 
-    Ship(int c, int o) {
-        super(ShipLocs[c].x, ShipLocs[c].y);
-        OriginalLocation = new Vector2(ShipLocs[c].x, ShipLocs[c].y);
-        ShipInit(c, o);
+    public enum Orientation {
+        HORIZONTAL(0), VERTICAL(1);
+
+        private Orientation opposite;
+        private int ordinal;
+
+        static {
+            HORIZONTAL.opposite = VERTICAL;
+            VERTICAL.opposite = HORIZONTAL;
+        }
+
+        public int getOrdinal() {
+            return ordinal;
+        }
+
+        Orientation(int i) {
+            ordinal = i;
+        }
+
+        public Orientation toggle() {
+            return opposite;
+        }
     }
 
-    void ShipInit(int c, int o) {
-        Size=new Vector2(ShipSizes[c]);
-        TopLeft=new Vector2(Center.x-Size.x/2, Center.y-Size.y/2);
+    private ShipClass shipClass;
+    private Orientation orientation, originalOrientation;
+    private Vector2 originalCenter, originalDimensions;
+    private Vector2[] onSquares;
+    private boolean[] activeSquares;
+    public boolean locationSet;
+
+    public Ship(int x, int y, ShipClass c, Orientation o, int dimension) {
+        super(x, y, dimension * c.getLength(), dimension);
         shipClass = c;
         orientation = o;
         originalOrientation = o;
+        originalCenter = center.cpy();
+        originalDimensions = dimensions.cpy();
         locationSet = false;
-        OnSquares = new Vector2[c + 1];
-        for (int i=0; i<OnSquares.length; i++)
-            OnSquares[i]=new Vector2();
-        ActiveSquares = new boolean[c + 1];
-        unselectSquares();
+        onSquares = new Vector2[c.getLength()];
+        for (int i=0; i< onSquares.length; i++) {
+            onSquares[i]=new Vector2();
+        }
+        activeSquares = new boolean[c.getLength()];
+        deselectSquares();
     }
 
-    void reset() {
-        move(OriginalLocation.x, OriginalLocation.y);
-        resetOrientation();
-        unselectSquares();
+    public void reset() {
+        resetShip();
+        deselectSquares();
     }
 
-    void unselectSquares(){
-        for (int i = 0; i < ActiveSquares.length; i++)
-            ActiveSquares[i] = false;
+    public Orientation getOrientation() {
+        return orientation;
     }
 
-    void changeOrientation(){
-
-        orientation=(orientation+1)%2;
-        float temp=Size.x;
-        Size.x=Size.y;
-        Size.y=temp;
-        TopLeft.x=Center.x-Size.x/2;
-        TopLeft.y=Center.y-Size.y/2;
-
+    public ShipClass getShipClass() {
+        return shipClass;
     }
 
-    void resetOrientation(){
-        orientation=originalOrientation;
-        Size.x=ShipSizes[shipClass].x;
-        Size.y=ShipSizes[shipClass].y;
-        TopLeft.x=Center.x-Size.x/2;
-        TopLeft.y=Center.y-Size.y/2;
+    public Vector2[] getOnSquares() {
+        return onSquares;
     }
 
-    void move(float x, float y){
-        Center.x=x;
-        Center.y=y;
-        TopLeft.x=Center.x-Size.x/2;
-        TopLeft.y=Center.y-Size.y/2;
+    public boolean[] getActiveSquares() {
+        return activeSquares;
     }
+
+    public void deselectSquares(){
+        for (int i = 0; i < activeSquares.length; i++)
+            activeSquares[i] = false;
+    }
+
+    public void changeOrientation(){
+        orientation = orientation.toggle();
+        float temp = dimensions.x;
+        dimensions.x = dimensions.y;
+        dimensions.y = temp;
+        setTopLeft();
+    }
+
+    public void resetShip(){
+        orientation = originalOrientation;
+        dimensions = originalDimensions;
+        move(originalCenter.x, originalCenter.y);
+    }
+
+
+
 }

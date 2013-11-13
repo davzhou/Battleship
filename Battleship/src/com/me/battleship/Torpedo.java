@@ -8,7 +8,7 @@ public class Torpedo extends BaseObject {
     static final float TORPEDO_SIZE_WIDTH = 50f;
     static final float TORPEDO_SIZE_HEIGHT = 40f;
 
-    Torpedo(float x, float y, Globals.AttackStatus s) {
+    Torpedo(int x,int y, Globals.AttackStatus s) {
         super(x, y);
         status = s;
     }
