@@ -5,7 +5,9 @@ import com.badlogic.gdx.math.Vector2;
 public class Globals {
     static final int EMPTY = 0;
 
-
+    static enum AttackStatus {
+        HIT, MISS
+    }
 
     static boolean isInside(float x, float y, Vector2 topLeft, Vector2 size) {
         return x > topLeft.x && x < topLeft.x + size.x && y > topLeft.y && y < topLeft.y + size.y;

@@ -13,10 +13,6 @@ public class Board extends BaseObject {
     boolean isActive;
     String name;
 
-    static enum SquareStatus {
-        HIT, MISS
-    }
-
     public List<Ship> getShips() {
         return ships;
     }
@@ -69,10 +65,10 @@ public class Board extends BaseObject {
                               // before
             return 0;
         else if (myGrid[x][y] == 0) { // empty square
-            torpedoes.add(new Torpedo(x, y, SquareStatus.MISS));
+            torpedoes.add(new Torpedo(x, y, Globals.AttackStatus.MISS));
             return 1;
         } else { // square has ship
-            torpedoes.add(new Torpedo(x, y, SquareStatus.HIT));
+            torpedoes.add(new Torpedo(x, y, Globals.AttackStatus.HIT));
             boolean gameFinished = true;
             for (int i = 0; i < 10 && gameFinished; i++)
                 for (int j = 0; j < 10; j++)

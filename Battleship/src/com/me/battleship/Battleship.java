@@ -90,8 +90,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
     @Override
     public boolean touchUp(int x, int y, int pointer, int button) {
 
-        //if (selectedShip != null && timeDragged > .1f && Globals.isInsideLoose(selectedShip, player1, drawer.getTileSize() / 6)) {
-            if (selectedShip != null && timeDragged > .1f && Globals.isInsideLoose(selectedShip, player1, 0)) {
+        if (selectedShip != null && timeDragged > .1f && Globals.isInside(selectedShip, player1)) {
             selectedShip.locationSet = true;
             drawer.centerShipOnGrid(selectedShip);
         } else if (selectedShip != null) {
