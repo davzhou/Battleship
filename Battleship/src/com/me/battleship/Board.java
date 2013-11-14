@@ -192,11 +192,13 @@ public class Board extends BaseObject {
             activeSquares[i] = false;
     }
 
-    public void placeShipOnGrid() {
+    public void placeShipOnGrid(Ship s) {
         for (int i = 0; i < activeSquares.length; i++) {
             if (activeSquares[i]) {
                 myGrid[(int) onSquares[i].x][(int) onSquares[i].y] = Globals.FILLED;
             }
         }
+        
+        s.locationSet=true;
     }
 }
