@@ -12,7 +12,7 @@ public class Board extends BaseObject {
     private int[][] myGrid, enemyGrid;
     private int size, tileSize;
     int turns;
-    boolean isActive;
+    boolean isActive, validShipPlacement;
     String name;
     private Vector2[] onSquares;
     private boolean[] activeSquares;
@@ -129,6 +129,7 @@ public class Board extends BaseObject {
         int j = -(length - 1) / 2;
         float odd_length_adj = (length + 1) % 2 * tileSize / 2;
         int temp_x, temp_y;
+        validShipPlacement=true;
         switch (s.getOrientation()) {
         case HORIZONTAL:
 
@@ -144,8 +145,10 @@ public class Board extends BaseObject {
                         getOnSquares()[i].y = temp_y;
                         getActiveSquares()[i] = true;
 
-                    } else
+                    } else {
                         getActiveSquares()[i] = false;
+                        validShipPlacement=false;
+                    }
                     j++;
                 }
                 for (int i = s.getShipClass().getLength(); i < 5; i++)
@@ -167,8 +170,10 @@ public class Board extends BaseObject {
                         getOnSquares()[i].y = temp_y + j;
                         getActiveSquares()[i] = true;
 
-                    } else
+                    } else {
                         getActiveSquares()[i] = false;
+                        validShipPlacement=false;
+                    }
                     j++;
                 }
                 for (int i = s.getShipClass().getLength(); i < 5; i++)
