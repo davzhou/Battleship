@@ -87,6 +87,7 @@ public class Ship extends BaseObject {
         orientation = originalOrientation;
         dimensions.set(originalDimensions);
         move(originalCenter.x, originalCenter.y);
+        locationSet=false;
     }
 
 }
