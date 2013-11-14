@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL10;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -91,8 +90,8 @@ public class Battleship implements ApplicationListener, InputProcessor {
     @Override
     public boolean touchUp(int x, int y, int pointer, int button) {
 
-        boolean onGrid = Globals.insideRegion(x, y, player1.topLeft, player1.dimensions);
-        if (selectedShip != null && timeDragged > .1f && onGrid) {
+        //if (selectedShip != null && timeDragged > .1f && Globals.isInsideLoose(selectedShip, player1, drawer.getTileSize() / 6)) {
+            if (selectedShip != null && timeDragged > .1f && Globals.isInsideLoose(selectedShip, player1, 0)) {
             selectedShip.locationSet = true;
             drawer.centerShipOnGrid(selectedShip);
         } else if (selectedShip != null) {
@@ -121,10 +120,10 @@ public class Battleship implements ApplicationListener, InputProcessor {
         } else {
             timeDragged += Gdx.graphics.getDeltaTime();
             selectedShip.move(x, y);
-            if (!rotated && Globals.insideRegion(x, y, rotateRegion.topLeft, rotateRegion.dimensions)) {
+            if (!rotated && Globals.isInside(x, y, rotateRegion)) {
                 rotated = true;
                 selectedShip.changeOrientation();
-            } else if (rotated && !Globals.insideRegion(x, y, rotateRegion.topLeft, rotateRegion.dimensions)) {
+            } else if (rotated && !Globals.isInside(x, y, rotateRegion)) {
                 rotated = false;
             }
             drawer.highlightSquares(x, y, selectedShip);
@@ -143,7 +142,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
     }
 
     boolean touchedShip(Ship s, int x, int y) {
-        return Globals.insideRegion(x, y, s.topLeft, s.dimensions);
+        return Globals.isInside(x, y, s);
     }
 
     private void createShips(Board player, int unitDimension) {

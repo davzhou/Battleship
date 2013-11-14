@@ -41,4 +41,28 @@ public abstract class BaseObject {
         center.x = dimensions.x / 2 + topLeft.x;
         center.y = dimensions.y / 2 + topLeft.y;
     }
+
+    public Vector2 getTopLeft() {
+        return topLeft;
+    }
+
+    public float getTopX() {
+        return topLeft.x;
+    }
+
+    public float getTopY() {
+        return topLeft.y;
+    }
+
+    public Vector2 getBottomRight() {
+        return new Vector2(getBotX(), getBotY());
+    }
+
+    public float getBotX() {
+        return topLeft.x + dimensions.x;
+    }
+
+    public float getBotY() {
+        return topLeft.y + dimensions.y;
+    }
 }
