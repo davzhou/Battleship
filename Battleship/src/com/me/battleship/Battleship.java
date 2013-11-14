@@ -91,9 +91,8 @@ public class Battleship implements ApplicationListener, InputProcessor {
     public boolean touchUp(int x, int y, int pointer, int button) {
 
         if (selectedShip != null && timeDragged > .1f && Globals.isInside(selectedShip, player1)) {
-            selectedShip.locationSet = true;
             player1.centerShipOnSquare(selectedShip);
-            player1.placeShipOnGrid();
+            player1.placeShipOnGrid(selectedShip);
             player1.deselectSquares();
         } else if (selectedShip != null) {
             selectedShip.reset();
