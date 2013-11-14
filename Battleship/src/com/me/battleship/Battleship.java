@@ -95,6 +95,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
             player1.placeShipOnGrid(selectedShip);
             player1.deselectSquares();
         } else if (selectedShip != null) {
+            player1.removeShipOnGrid(selectedShip);
             selectedShip.reset();
             player1.deselectSquares();
         } else {
