@@ -5,11 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Ship extends BaseObject {
 
     public enum ShipClass {
-        PATROL(1),
-        FRIGATE(2),
-        DESTROYER(3),
-        BATTLESHIP(4),
-        CARRIER(5);
+        PATROL(1), FRIGATE(2), DESTROYER(3), BATTLESHIP(4), CARRIER(5);
 
         private int length;
 
@@ -20,6 +16,8 @@ public class Ship extends BaseObject {
         ShipClass(int length) {
             this.length = length;
         }
+        
+        
     }
 
     public enum Orientation {
@@ -49,8 +47,7 @@ public class Ship extends BaseObject {
     private ShipClass shipClass;
     private Orientation orientation, originalOrientation;
     private Vector2 originalCenter, originalDimensions;
-    private Vector2[] onSquares;
-    private boolean[] activeSquares;
+
     public boolean locationSet;
 
     public Ship(int x, int y, ShipClass c, Orientation o, int dimension) {
@@ -61,17 +58,11 @@ public class Ship extends BaseObject {
         originalCenter = center.cpy();
         originalDimensions = dimensions.cpy();
         locationSet = false;
-        onSquares = new Vector2[c.getLength()];
-        for (int i=0; i< onSquares.length; i++) {
-            onSquares[i]=new Vector2();
-        }
-        activeSquares = new boolean[c.getLength()];
-        deselectSquares();
+
     }
 
     public void reset() {
         resetShip();
-        deselectSquares();
     }
 
     public Orientation getOrientation() {
@@ -82,20 +73,9 @@ public class Ship extends BaseObject {
         return shipClass;
     }
 
-    public Vector2[] getOnSquares() {
-        return onSquares;
-    }
 
-    public boolean[] getActiveSquares() {
-        return activeSquares;
-    }
 
-    public void deselectSquares(){
-        for (int i = 0; i < activeSquares.length; i++)
-            activeSquares[i] = false;
-    }
-
-    public void changeOrientation(){
+    public void changeOrientation() {
         orientation = orientation.toggle();
         float temp = dimensions.x;
         dimensions.x = dimensions.y;
@@ -103,12 +83,10 @@ public class Ship extends BaseObject {
         setTopLeft();
     }
 
-    public void resetShip(){
+    public void resetShip() {
         orientation = originalOrientation;
-        dimensions = originalDimensions;
+        dimensions.set(originalDimensions);
         move(originalCenter.x, originalCenter.y);
     }
-
-
 
 }

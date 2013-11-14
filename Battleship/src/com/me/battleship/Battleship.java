@@ -92,9 +92,12 @@ public class Battleship implements ApplicationListener, InputProcessor {
 
         if (selectedShip != null && timeDragged > .1f && Globals.isInside(selectedShip, player1)) {
             selectedShip.locationSet = true;
-            drawer.centerShipOnGrid(selectedShip);
+            player1.centerShipOnSquare(selectedShip);
+            player1.placeShipOnGrid();
+            player1.deselectSquares();
         } else if (selectedShip != null) {
             selectedShip.reset();
+            player1.deselectSquares();
         } else {
             for (int i = 0; i < player1.ships.size(); i++)
                 if (touchedShip(player1.ships.get(i), x, y)) {
@@ -125,7 +128,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
             } else if (rotated && !Globals.isInside(x, y, rotateRegion)) {
                 rotated = false;
             }
-            drawer.highlightSquares(x, y, selectedShip);
+            player1.highlightSquares(x, y, selectedShip);
         }
         return true;
     }

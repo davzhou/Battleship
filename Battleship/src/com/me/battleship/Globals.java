@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Globals {
     static final int EMPTY = 0;
+    static final int FILLED = 1;
 
     static enum AttackStatus {
         HIT, MISS
@@ -39,5 +40,6 @@ public class Globals {
         return o1.getTopX() < o2.getBotX() && o1.getBotX() > o2.getTopX() &&
                 o1.getTopY() < o2.getBotY() && o1.getBotY() > o2.getTopY();
     }
+
 
 }
