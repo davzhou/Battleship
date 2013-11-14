@@ -22,7 +22,7 @@ public class Drawer {
     private Board board;
     private Properties props = new Properties();
     private int screenWidth, screenHeight, tileSize;
-    private Texture tileTexture, selectedTileTexture;
+    private Texture tileTexture, selectedTileTexture[];
     private TextureRegion[] frigate, cruiser, battleship;
     private Button rotateRegion;
 
@@ -86,9 +86,10 @@ public class Drawer {
         // draw rotate zone
         batch.draw(tileTexture, rotateRegion.topLeft.x, rotateRegion.topLeft.y,
                 rotateRegion.dimensions.x, rotateRegion.dimensions.y);
+        // draw highlighted squares
         for (int j = 0; j < board.getActiveSquares().length; j++) {
             if (board.getActiveSquares()[j]) {
-                batch.draw(selectedTileTexture, board.getOnSquares()[j].x
+                batch.draw(selectedTileTexture[board.validShipPlacement ? 0 : 1], board.getOnSquares()[j].x
                         * tileSize + board.topLeft.x,
                         board.getOnSquares()[j].y * tileSize
                                 + board.topLeft.y, tileSize, tileSize);
@@ -168,7 +169,10 @@ public class Drawer {
 
         tileTexture = new Texture(Gdx.files.internal(props
                 .getProperty("texture.tile.empty")));
-        selectedTileTexture = new Texture(Gdx.files.internal(props
+        selectedTileTexture = new Texture[2];
+        selectedTileTexture[0] = new Texture(Gdx.files.internal(props
+                .getProperty("texture.tile.selected")));
+        selectedTileTexture[1] = new Texture(Gdx.files.internal(props
                 .getProperty("texture.tile.selected")));
     }
 
