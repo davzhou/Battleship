@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Ship extends BaseObject {
 
     public enum ShipClass {
-        PATROL(1), FRIGATE(2), DESTROYER(3), BATTLESHIP(4), CARRIER(5);
+        PATROL(1), CRUISER(2), SUBMARINE(3), BATTLESHIP(4), CARRIER(5);
 
         private int length;
 
@@ -67,6 +67,10 @@ public class Ship extends BaseObject {
 
     public Orientation getOrientation() {
         return orientation;
+    }
+
+    public Vector2 getOrigDimensions(){
+        return originalDimensions;
     }
 
     public ShipClass getShipClass() {

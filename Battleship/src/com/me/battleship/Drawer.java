@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class Drawer {
     private Properties props = new Properties();
     private int screenWidth, screenHeight, tileSize;
     private Texture tileTexture, selectedTileTexture[];
-    private TextureRegion[] frigate, cruiser, battleship;
+    private TextureRegion cruiser, patrol, battleship, submarine, carrier;
     private Button rotateRegion;
 
     public Drawer(Board board, Button rotateRegion) {
@@ -100,19 +101,33 @@ public class Drawer {
             switch (ship.getShipClass()) {
             // TODO
             case PATROL:
-                shipTexture = frigate[orientationOrdinal];
+                shipTexture = patrol;
                 break;
-            case FRIGATE:
-            case DESTROYER:
-                shipTexture = cruiser[orientationOrdinal];
+            case CRUISER:
+                shipTexture = cruiser;
+                break;
+            case SUBMARINE:
+                shipTexture = submarine;
                 break;
             case BATTLESHIP:
+                shipTexture = battleship;
+                break;
             case CARRIER:
             default:
-                shipTexture = battleship[orientationOrdinal];
+                shipTexture = carrier;
                 break;
             }
-            batch.draw(shipTexture, ship.topLeft.x, ship.topLeft.y, ship.dimensions.x, ship.dimensions.y);
+            switch (ship.getOrientation()) {
+            case HORIZONTAL:
+                batch.draw(shipTexture, ship.topLeft.x, ship.topLeft.y, ship.dimensions.x, ship.dimensions.y);
+                break;
+            case VERTICAL:
+            default:
+                Vector2 o_dim = ship.getOrigDimensions();
+                batch.draw(shipTexture, ship.center.x - o_dim.x / 2, ship.center.y - o_dim.y / 2, o_dim.x / 2,
+                        o_dim.y / 2, o_dim.x, o_dim.y, 1f, 1f, 90f);
+                break;
+            }
 
             // draw selected
 
@@ -153,12 +168,11 @@ public class Drawer {
 
         Texture shipTextures;
         shipTextures = new Texture(Gdx.files.internal(props.getProperty("texture.ships")));
-        frigate = textureFlipper(new TextureRegion(shipTextures, 0, 0, 40, 40), new TextureRegion(shipTextures, 40, 0,
-                40, 40));
-        cruiser = textureFlipper(new TextureRegion(shipTextures, 0, 60, 80, 40), new TextureRegion(shipTextures, 0,
-                100, 40, 80));
-        battleship = textureFlipper(new TextureRegion(shipTextures, 0, 200, 160, 40), new TextureRegion(shipTextures,
-                0, 240, 40, 160));
+        patrol = textureFlipper(new TextureRegion(shipTextures, 0, 0, 52, 32));
+        cruiser = textureFlipper(new TextureRegion(shipTextures, 0, 40, 78, 28));
+        submarine = textureFlipper(new TextureRegion(shipTextures, 0, 80, 91, 25));
+        battleship = textureFlipper(new TextureRegion(shipTextures, 0, 120, 116, 27));
+        carrier = textureFlipper(new TextureRegion(shipTextures, 0, 160, 123, 31));
         // TODO
 
         tileTexture = new Texture(Gdx.files.internal(props.getProperty("texture.tile.empty")));
@@ -171,6 +185,11 @@ public class Drawer {
         for (int i = 0; i < textures.length; i++)
             textures[i].flip(false, true);
         return textures;
+    }
+
+    private static TextureRegion textureFlipper(TextureRegion texture) {
+        texture.flip(false, true);
+        return texture;
     }
 
 }

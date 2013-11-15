@@ -41,7 +41,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
                 Integer.valueOf(props.getProperty("rotate.zone.size.y")));
         drawer = new Drawer(player1, rotateRegion);
         // scaled to 80% of tilesize
-        createShips(player1, drawer.getTileSize() * 4 / 5);
+        createShips(player1, drawer.getTileSize() * 9 / 10);
         Gdx.input.setInputProcessor(this);
     }
 
@@ -92,8 +92,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
     @Override
     public boolean touchUp(int x, int y, int pointer, int button) {
 
-        if (selectedShip != null && player1.validShipPlacement && timeDragged > .1f
-                && Globals.isInside(selectedShip, player1)) {
+        if (selectedShip != null && player1.validShipPlacement && timeDragged > .1f) {
             player1.centerShipOnSquare(selectedShip);
             player1.placeShipOnGrid(selectedShip);
             player1.deselectSquares();
