@@ -36,11 +36,11 @@ public class Board extends BaseObject {
          * Ship(Globals.shipsRequired[i], Globals.HORIZONTAL)); }
          */
 
-        onSquares = new Vector2[5]; // needs to be changed!!
+        onSquares = new Vector2[5]; // TODO
         for (int i = 0; i < onSquares.length; i++) {
             onSquares[i] = new Vector2();
         }
-        activeSquares = new boolean[5]; // needs to be changed!!
+        activeSquares = new boolean[5]; // TODO
         deselectSquares();
     }
 
@@ -107,17 +107,13 @@ public class Board extends BaseObject {
         temp_adjust_half = (s.getShipClass().getLength()) % 2 * half_tile;
         switch (s.getOrientation()) {
         case HORIZONTAL:
-            x = topLeft.x + getOnSquares()[temp_adjust].x * tileSize
-                    + temp_adjust_half;
-            y = topLeft.y + getOnSquares()[temp_adjust].y * tileSize
-                    + half_tile;
+            x = topLeft.x + getOnSquares()[temp_adjust].x * tileSize + temp_adjust_half;
+            y = topLeft.y + getOnSquares()[temp_adjust].y * tileSize + half_tile;
             break;
         case VERTICAL:
         default:
-            x = topLeft.x + getOnSquares()[temp_adjust].x * tileSize
-                    + half_tile;
-            y = topLeft.y + getOnSquares()[temp_adjust].y * tileSize
-                    + temp_adjust_half;
+            x = topLeft.x + getOnSquares()[temp_adjust].x * tileSize + half_tile;
+            y = topLeft.y + getOnSquares()[temp_adjust].y * tileSize + temp_adjust_half;
             break;
 
         }
@@ -129,7 +125,7 @@ public class Board extends BaseObject {
         int j = -(length - 1) / 2;
         float odd_length_adj = (length + 1) % 2 * tileSize / 2;
         int temp_x, temp_y;
-        validShipPlacement=true;
+        validShipPlacement = true;
         switch (s.getOrientation()) {
         case HORIZONTAL:
 
@@ -138,8 +134,7 @@ public class Board extends BaseObject {
             if (y >= topLeft.y && y < topLeft.y + dimensions.y) {
                 for (int i = 0; i < s.getShipClass().getLength(); i++) {
 
-                    if (temp_x + j >= 0 && temp_x + j < getSize()
-                            && myGrid[temp_x + j][temp_y] == 0) {
+                    if (temp_x + j >= 0 && temp_x + j < getSize() && myGrid[temp_x + j][temp_y] == 0) {
 
                         getOnSquares()[i].x = temp_x + j;
                         getOnSquares()[i].y = temp_y;
@@ -147,7 +142,7 @@ public class Board extends BaseObject {
 
                     } else {
                         getActiveSquares()[i] = false;
-                        validShipPlacement=false;
+                        validShipPlacement = false;
                     }
                     j++;
                 }
@@ -162,9 +157,8 @@ public class Board extends BaseObject {
             temp_x = (int) (x - topLeft.x) / tileSize;
             temp_y = (int) (y - odd_length_adj - topLeft.y) / tileSize;
             if (x >= topLeft.x && x < topLeft.x + dimensions.x) {
-                for (int i = 0; i < getOnSquares().length; i++) {
-                    if (temp_y + j >= 0 && temp_y + j < getSize()
-                            && myGrid[temp_x][temp_y + j] == 0) {
+                for (int i = 0; i < s.getShipClass().getLength(); i++) {
+                    if (temp_y + j >= 0 && temp_y + j < getSize() && myGrid[temp_x][temp_y + j] == 0) {
 
                         getOnSquares()[i].x = temp_x;
                         getOnSquares()[i].y = temp_y + j;
@@ -172,7 +166,7 @@ public class Board extends BaseObject {
 
                     } else {
                         getActiveSquares()[i] = false;
-                        validShipPlacement=false;
+                        validShipPlacement = false;
                     }
                     j++;
                 }
@@ -201,17 +195,19 @@ public class Board extends BaseObject {
         for (int i = 0; i < activeSquares.length; i++) {
             if (activeSquares[i]) {
                 myGrid[(int) onSquares[i].x][(int) onSquares[i].y] = Globals.FILLED;
+                s.getOnSquares()[i] = onSquares[i].cpy();
             }
-        }  
-        s.locationSet=true;
+        }
+        s.locationSet = true;
     }
-    
-    public void removeShipOnGrid(Ship s) {
-        for (int i = 0; i < activeSquares.length; i++) {
-            if (activeSquares[i]) {
-                myGrid[(int) onSquares[i].x][(int) onSquares[i].y] = Globals.EMPTY;
+
+    public void removeShipIfOnGrid(Ship s) {
+        if (s.locationSet) {
+            for (int i = 0; i < s.getShipClass().getLength(); i++) {
+                myGrid[(int) s.getOnSquares()[i].x][(int) s.getOnSquares()[i].y] = Globals.EMPTY;
             }
-        }  
-        s.locationSet=false;
+            s.locationSet = false;
+        }
+
     }
 }

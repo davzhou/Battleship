@@ -16,17 +16,17 @@ public abstract class BaseObject {
     protected BaseObject(int x, int y, int u, int v) {
         topLeft = new Vector2(x, y);
         center = new Vector2(0, 0);
-        dimensions = new Vector2(u,v);
+        dimensions = new Vector2(u, v);
         setCenter();
     }
 
-    public void move(float x, float y){
+    public void move(float x, float y) {
         center.x = x;
         center.y = y;
         setTopLeft();
     }
 
-    public void moveTopLeft(float x, float y){
+    public void moveTopLeft(float x, float y) {
         topLeft.x = x;
         topLeft.y = y;
         setCenter();

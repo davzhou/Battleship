@@ -35,8 +35,7 @@ public class Drawer {
         }
         this.board = board;
         this.rotateRegion = rotateRegion;
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight());
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         // Set it to an orthographic projection with "y down"
         screenWidth = Gdx.graphics.getWidth();
         screenHeight = Gdx.graphics.getHeight();
@@ -78,21 +77,20 @@ public class Drawer {
         int tileSize = getTileSize();
         for (int x = 0; x < board.getSize(); x++) {
             for (int y = 0; y < board.getSize(); y++) {
-                batch.draw(tileTexture, x * tileSize + board.topLeft.x, y
-                        * tileSize + board.topLeft.y, tileSize, tileSize);
+                batch.draw(tileTexture, x * tileSize + board.topLeft.x, y * tileSize + board.topLeft.y, tileSize,
+                        tileSize);
             }
         }
 
         // draw rotate zone
-        batch.draw(tileTexture, rotateRegion.topLeft.x, rotateRegion.topLeft.y,
-                rotateRegion.dimensions.x, rotateRegion.dimensions.y);
+        batch.draw(tileTexture, rotateRegion.topLeft.x, rotateRegion.topLeft.y, rotateRegion.dimensions.x,
+                rotateRegion.dimensions.y);
         // draw highlighted squares
         for (int j = 0; j < board.getActiveSquares().length; j++) {
+            int which_texture = board.validShipPlacement ? 1 : 0;
             if (board.getActiveSquares()[j]) {
-                batch.draw(selectedTileTexture[board.validShipPlacement ? 0 : 1], board.getOnSquares()[j].x
-                        * tileSize + board.topLeft.x,
-                        board.getOnSquares()[j].y * tileSize
-                                + board.topLeft.y, tileSize, tileSize);
+                batch.draw(selectedTileTexture[which_texture], board.getOnSquares()[j].x * tileSize + board.topLeft.x,
+                        board.getOnSquares()[j].y * tileSize + board.topLeft.y, tileSize, tileSize);
             }
         }
         // draw the ships
@@ -114,11 +112,9 @@ public class Drawer {
                 shipTexture = battleship[orientationOrdinal];
                 break;
             }
-            batch.draw(shipTexture, ship.topLeft.x, ship.topLeft.y,
-                    ship.dimensions.x, ship.dimensions.y);
+            batch.draw(shipTexture, ship.topLeft.x, ship.topLeft.y, ship.dimensions.x, ship.dimensions.y);
 
             // draw selected
-
 
         }
         batch.end();
@@ -156,24 +152,19 @@ public class Drawer {
         // sprites.add(p2GridBorder);
 
         Texture shipTextures;
-        shipTextures = new Texture(Gdx.files.internal(props
-                .getProperty("texture.ships")));
-        frigate = textureFlipper(new TextureRegion(shipTextures, 0, 0, 40, 40),
-                new TextureRegion(shipTextures, 40, 0, 40, 40));
-        cruiser = textureFlipper(
-                new TextureRegion(shipTextures, 0, 60, 80, 40),
-                new TextureRegion(shipTextures, 0, 100, 40, 80));
-        battleship = textureFlipper(new TextureRegion(shipTextures, 0, 200,
-                160, 40), new TextureRegion(shipTextures, 0, 240, 40, 160));
+        shipTextures = new Texture(Gdx.files.internal(props.getProperty("texture.ships")));
+        frigate = textureFlipper(new TextureRegion(shipTextures, 0, 0, 40, 40), new TextureRegion(shipTextures, 40, 0,
+                40, 40));
+        cruiser = textureFlipper(new TextureRegion(shipTextures, 0, 60, 80, 40), new TextureRegion(shipTextures, 0,
+                100, 40, 80));
+        battleship = textureFlipper(new TextureRegion(shipTextures, 0, 200, 160, 40), new TextureRegion(shipTextures,
+                0, 240, 40, 160));
         // TODO
 
-        tileTexture = new Texture(Gdx.files.internal(props
-                .getProperty("texture.tile.empty")));
+        tileTexture = new Texture(Gdx.files.internal(props.getProperty("texture.tile.empty")));
         selectedTileTexture = new Texture[2];
-        selectedTileTexture[0] = new Texture(Gdx.files.internal(props
-                .getProperty("texture.tile.selected")));
-        selectedTileTexture[1] = new Texture(Gdx.files.internal(props
-                .getProperty("texture.tile.selected")));
+        selectedTileTexture[0] = new Texture(Gdx.files.internal(props.getProperty("texture.tile.invalid")));
+        selectedTileTexture[1] = new Texture(Gdx.files.internal(props.getProperty("texture.tile.valid")));
     }
 
     private static TextureRegion[] textureFlipper(TextureRegion... textures) {

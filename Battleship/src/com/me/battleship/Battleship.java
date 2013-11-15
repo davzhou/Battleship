@@ -32,13 +32,15 @@ public class Battleship implements ApplicationListener, InputProcessor {
         timeDragged = 0f;
         rotated = false;
         t = new Torpedo(50, 50, Globals.AttackStatus.HIT);
-        player1 = new Board( Integer.valueOf(props.getProperty("grid.loc.x")), Integer.valueOf(props.getProperty("grid.loc.y")),
-                Integer.valueOf(props.getProperty("grid.dimensions.x")), Integer.valueOf(props.getProperty("grid.dimensions.y")),
-                "player1", Integer.parseInt(props.getProperty("grid.size")));
-        rotateRegion = new Button(Integer.valueOf(props.getProperty("rotate.zone.loc.x")), Integer.valueOf(props.getProperty("rotate.zone.loc.y")),
-                Integer.valueOf(props.getProperty("rotate.zone.size.x")), Integer.valueOf(props.getProperty("rotate.zone.size.y")));
+        player1 = new Board(Integer.valueOf(props.getProperty("grid.loc.x")), Integer.valueOf(props
+                .getProperty("grid.loc.y")), Integer.valueOf(props.getProperty("grid.dimensions.x")),
+                Integer.valueOf(props.getProperty("grid.dimensions.y")), "player1", Integer.parseInt(props
+                        .getProperty("grid.size")));
+        rotateRegion = new Button(Integer.valueOf(props.getProperty("rotate.zone.loc.x")), Integer.valueOf(props
+                .getProperty("rotate.zone.loc.y")), Integer.valueOf(props.getProperty("rotate.zone.size.x")),
+                Integer.valueOf(props.getProperty("rotate.zone.size.y")));
         drawer = new Drawer(player1, rotateRegion);
-        //scaled to 80% of tilesize
+        // scaled to 80% of tilesize
         createShips(player1, drawer.getTileSize() * 4 / 5);
         Gdx.input.setInputProcessor(this);
     }
@@ -90,17 +92,19 @@ public class Battleship implements ApplicationListener, InputProcessor {
     @Override
     public boolean touchUp(int x, int y, int pointer, int button) {
 
-        if (selectedShip != null && timeDragged > .1f && Globals.isInside(selectedShip, player1)) {
+        if (selectedShip != null && player1.validShipPlacement && timeDragged > .1f
+                && Globals.isInside(selectedShip, player1)) {
             player1.centerShipOnSquare(selectedShip);
             player1.placeShipOnGrid(selectedShip);
             player1.deselectSquares();
         } else if (selectedShip != null) {
-            player1.removeShipOnGrid(selectedShip);
+            player1.removeShipIfOnGrid(selectedShip);
             selectedShip.reset();
             player1.deselectSquares();
         } else {
             for (int i = 0; i < player1.ships.size(); i++)
                 if (touchedShip(player1.ships.get(i), x, y)) {
+                    player1.removeShipIfOnGrid(player1.ships.get(i));
                     player1.ships.get(i).reset();
                     return true;
                 }
@@ -116,6 +120,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
             for (Ship ship : player1.getShips()) {
                 if (touchedShip(ship, x, y)) {
                     selectedShip = ship;
+                    player1.removeShipIfOnGrid(selectedShip);
                     return true;
                 }
             }
@@ -150,8 +155,8 @@ public class Battleship implements ApplicationListener, InputProcessor {
     private void createShips(Board player, int unitDimension) {
         String[] shipSizes = props.getProperty("grid.ships").split(",");
         for (int i = 0; i < shipSizes.length; i++) {
-            player.addShip(new Ship(Integer.valueOf(props.getProperty("ship.zone.loc.x")),
-                    i * unitDimension + Integer.valueOf(props.getProperty("ship.zone.loc.y")),
+            player.addShip(new Ship(Integer.valueOf(props.getProperty("ship.zone.loc.x")), i * unitDimension
+                    + Integer.valueOf(props.getProperty("ship.zone.loc.y")),
                     Ship.ShipClass.valueOf(shipSizes[i].trim()), Ship.Orientation.HORIZONTAL, unitDimension));
         }
     }

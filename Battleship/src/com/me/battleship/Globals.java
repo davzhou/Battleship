@@ -30,16 +30,14 @@ public class Globals {
         return isInsideLoose(o1.getTopX(), o1.getTopY(), o2, l) && isInsideLoose(o1.getBotX(), o1.getBotY(), o2, l);
     }
 
-
     static boolean isTouching(BaseObject o, Vector2 topLeft, Vector2 size) {
-        //TODO
+        // TODO
         return true;
     }
 
     static boolean isTouching(BaseObject o1, BaseObject o2) {
-        return o1.getTopX() < o2.getBotX() && o1.getBotX() > o2.getTopX() &&
-                o1.getTopY() < o2.getBotY() && o1.getBotY() > o2.getTopY();
+        return o1.getTopX() < o2.getBotX() && o1.getBotX() > o2.getTopX() && o1.getTopY() < o2.getBotY()
+                && o1.getBotY() > o2.getTopY();
     }
-
 
 }

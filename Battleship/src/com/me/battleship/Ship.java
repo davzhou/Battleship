@@ -16,8 +16,7 @@ public class Ship extends BaseObject {
         ShipClass(int length) {
             this.length = length;
         }
-        
-        
+
     }
 
     public enum Orientation {
@@ -46,7 +45,7 @@ public class Ship extends BaseObject {
 
     private ShipClass shipClass;
     private Orientation orientation, originalOrientation;
-    private Vector2 originalCenter, originalDimensions;
+    private Vector2 originalCenter, originalDimensions, onSquares[];
 
     public boolean locationSet;
 
@@ -58,6 +57,7 @@ public class Ship extends BaseObject {
         originalCenter = center.cpy();
         originalDimensions = dimensions.cpy();
         locationSet = false;
+        onSquares = new Vector2[shipClass.getLength()];
 
     }
 
@@ -73,7 +73,9 @@ public class Ship extends BaseObject {
         return shipClass;
     }
 
-
+    public Vector2[] getOnSquares() {
+        return onSquares;
+    }
 
     public void changeOrientation() {
         orientation = orientation.toggle();
@@ -87,7 +89,7 @@ public class Ship extends BaseObject {
         orientation = originalOrientation;
         dimensions.set(originalDimensions);
         move(originalCenter.x, originalCenter.y);
-        locationSet=false;
+        locationSet = false;
     }
 
 }
