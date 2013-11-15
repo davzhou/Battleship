@@ -133,7 +133,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
             } else if (rotated && !Globals.isInside(x, y, rotateRegion)) {
                 rotated = false;
             }
-            player1.highlightSquares(x, y, selectedShip);
+            player1.identifySquares(x, y, selectedShip);
         }
         return true;
     }

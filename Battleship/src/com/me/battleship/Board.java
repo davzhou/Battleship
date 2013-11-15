@@ -56,15 +56,6 @@ public class Board extends BaseObject {
 
     }
 
-    /*
-     * void placeShip(int x, int y, int shipClass, int ori) {
-     *
-     * if (ori == Globals.VERTICAL) { for (int i = 0; i < shipClass; i++)
-     * myGrid[x + i][y] = shipClass; } else { for (int i = 0; i < shipClass;
-     * i++) myGrid[x][y + i] = shipClass; } ships.add(new Ship(x, y, shipClass,
-     * ori));// gotta change thsi later }
-     */
-
     public int attackLocation(int x, int y) {
 
         if (myGrid[x][y] < 0) // any negative square has already been targeted
@@ -120,62 +111,68 @@ public class Board extends BaseObject {
         s.move(x, y);
     }
 
-    public void highlightSquares(int x, int y, Ship s) {
-        int length = s.getShipClass().getLength();
-        int j = -(length - 1) / 2;
-        float odd_length_adj = (length + 1) % 2 * tileSize / 2;
-        int temp_x, temp_y;
+    public void identifySquares(int x, int y, Ship s) {
+        int ship_length = s.getShipClass().getLength();
+        int ship_length_offset = -(ship_length - 1) / 2;
+        float odd_length_adj = (ship_length + 1) % 2 * tileSize / 2;
+        int length, width;
+        float min_bound, max_bound;
         validShipPlacement = true;
         switch (s.getOrientation()) {
         case HORIZONTAL:
 
-            temp_x = (int) ((x - odd_length_adj - topLeft.x) / tileSize);
-            temp_y = (int) ((y - topLeft.y) / tileSize);
-            if (y >= topLeft.y && y < topLeft.y + dimensions.y) {
+            length = (int) ((x - odd_length_adj - topLeft.x) / tileSize);
+            width = (int) ((y - topLeft.y) / tileSize);
+            min_bound = topLeft.y;
+            max_bound = topLeft.y + dimensions.y;
+            if (y >= min_bound && y < max_bound) {
                 for (int i = 0; i < s.getShipClass().getLength(); i++) {
 
-                    if (temp_x + j >= 0 && temp_x + j < getSize() && myGrid[temp_x + j][temp_y] == 0) {
+                    if (length + ship_length_offset >= 0 && length + ship_length_offset < getSize()
+                            && myGrid[length + ship_length_offset][width] == 0) {
 
-                        getOnSquares()[i].x = temp_x + j;
-                        getOnSquares()[i].y = temp_y;
+                        getOnSquares()[i].x = length + ship_length_offset;
+                        getOnSquares()[i].y = width;
                         getActiveSquares()[i] = true;
 
                     } else {
                         getActiveSquares()[i] = false;
                         validShipPlacement = false;
                     }
-                    j++;
+                    ship_length_offset++;
                 }
-                for (int i = s.getShipClass().getLength(); i < 5; i++)
-                    getActiveSquares()[i] = false;
+
             } else
                 deselectSquares();
             break;
         case VERTICAL:
         default:
-
-            temp_x = (int) (x - topLeft.x) / tileSize;
-            temp_y = (int) (y - odd_length_adj - topLeft.y) / tileSize;
-            if (x >= topLeft.x && x < topLeft.x + dimensions.x) {
+            width = (int) (x - topLeft.x) / tileSize;
+            length = (int) (y - odd_length_adj - topLeft.y) / tileSize;
+            min_bound = topLeft.x;
+            max_bound = topLeft.x + dimensions.x;
+            if (x >= min_bound && x < max_bound) {
                 for (int i = 0; i < s.getShipClass().getLength(); i++) {
-                    if (temp_y + j >= 0 && temp_y + j < getSize() && myGrid[temp_x][temp_y + j] == 0) {
+                    if (length + ship_length_offset >= 0 && length + ship_length_offset < getSize()
+                            && myGrid[width][length + ship_length_offset] == 0) {
 
-                        getOnSquares()[i].x = temp_x;
-                        getOnSquares()[i].y = temp_y + j;
+                        getOnSquares()[i].x = width;
+                        getOnSquares()[i].y = length + ship_length_offset;
                         getActiveSquares()[i] = true;
 
                     } else {
                         getActiveSquares()[i] = false;
                         validShipPlacement = false;
                     }
-                    j++;
+                    ship_length_offset++;
                 }
-                for (int i = s.getShipClass().getLength(); i < 5; i++)
-                    getActiveSquares()[i] = false;
+
             } else
                 deselectSquares();
             break;
         }
+        for (int i = s.getShipClass().getLength(); i < activeSquares.length; i++)
+            activeSquares[i] = false;
     }
 
     public Vector2[] getOnSquares() {
