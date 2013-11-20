@@ -142,8 +142,9 @@ public class Board extends BaseObject {
                     ship_length_offset++;
                 }
 
-            } else
+            } else {
                 deselectSquares();
+            }
             break;
         case VERTICAL:
         default:
@@ -167,8 +168,9 @@ public class Board extends BaseObject {
                     ship_length_offset++;
                 }
 
-            } else
+            } else {
                 deselectSquares();
+            }
             break;
         }
         for (int i = s.getShipClass().getLength(); i < activeSquares.length; i++)
@@ -205,6 +207,24 @@ public class Board extends BaseObject {
             }
             s.locationSet = false;
         }
+    }
 
+    public void autoPlace() {
+        for (Ship ship : ships) {
+            validShipPlacement = false;
+            while (!validShipPlacement) {
+                removeShipIfOnGrid(ship);
+                if (Math.random() > .5){
+                    ship.changeOrientation();
+                }
+                int x = (int)((getBotX() - getTopX()) * Math.random());
+                int y = (int)((getBotY() - getTopY()) * Math.random());
+                ship.move(x,y) ;
+                identifySquares(x,y,ship);
+            }
+            centerShipOnSquare(ship);
+            placeShipOnGrid(ship);
+            deselectSquares();
+        }
     }
 }

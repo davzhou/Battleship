@@ -25,9 +25,9 @@ public class Drawer {
     private int screenWidth, screenHeight, tileSize;
     private Texture tileTexture, selectedTileTexture[];
     private TextureRegion cruiser, patrol, battleship, submarine, carrier;
-    private Button rotateRegion;
+    private Button rotateRegion, autoButton;
 
-    public Drawer(Board board, Button rotateRegion) {
+    public Drawer(Board board, Button rotateRegion, Button autoButton) {
         try {
             props.load(Gdx.files.internal("data/config.properties").read());
         } catch (IOException e) {
@@ -36,6 +36,7 @@ public class Drawer {
         }
         this.board = board;
         this.rotateRegion = rotateRegion;
+        this.autoButton = autoButton;
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         // Set it to an orthographic projection with "y down"
         screenWidth = Gdx.graphics.getWidth();
@@ -86,6 +87,9 @@ public class Drawer {
         // draw rotate zone
         batch.draw(tileTexture, rotateRegion.topLeft.x, rotateRegion.topLeft.y, rotateRegion.dimensions.x,
                 rotateRegion.dimensions.y);
+        // draw auto button
+        batch.draw(tileTexture, autoButton.topLeft.x, autoButton.topLeft.y, autoButton.dimensions.x,
+                autoButton.dimensions.y);
         // draw highlighted squares
         for (int j = 0; j < board.getActiveSquares().length; j++) {
             int which_texture = board.validShipPlacement ? 1 : 0;

@@ -18,7 +18,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
     private boolean rotated;
     private Drawer drawer;
     private Properties props = new Properties();
-    private Button rotateRegion;
+    private Button rotateRegion, autoButton;
 
     @Override
     public void create() {
@@ -39,7 +39,10 @@ public class Battleship implements ApplicationListener, InputProcessor {
         rotateRegion = new Button(Integer.valueOf(props.getProperty("rotate.zone.loc.x")), Integer.valueOf(props
                 .getProperty("rotate.zone.loc.y")), Integer.valueOf(props.getProperty("rotate.zone.size.x")),
                 Integer.valueOf(props.getProperty("rotate.zone.size.y")));
-        drawer = new Drawer(player1, rotateRegion);
+        autoButton = new Button(Integer.valueOf(props.getProperty("auto.button.loc.x")), Integer.valueOf(props
+                .getProperty("auto.button.loc.y")), Integer.valueOf(props.getProperty("auto.button.size.x")),
+                Integer.valueOf(props.getProperty("auto.button.size.y")));
+        drawer = new Drawer(player1, rotateRegion, autoButton);
         // scaled to 80% of tilesize
         createShips(player1, drawer.getTileSize() * 9 / 10);
         Gdx.input.setInputProcessor(this);
@@ -100,6 +103,8 @@ public class Battleship implements ApplicationListener, InputProcessor {
             player1.removeShipIfOnGrid(selectedShip);
             selectedShip.reset();
             player1.deselectSquares();
+        } else if (selectedShip == null && Globals.isInside(x, y, autoButton)){
+            player1.autoPlace();
         } else {
             for (int i = 0; i < player1.ships.size(); i++)
                 if (touchedShip(player1.ships.get(i), x, y)) {
