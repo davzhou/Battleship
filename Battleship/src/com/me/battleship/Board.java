@@ -219,8 +219,8 @@ public class Board extends BaseObject {
                 if (Math.random() > .5){
                     ship.changeOrientation();
                 }
-                int x = (int)((getBotX() - getTopX()) * Math.random());
-                int y = (int)((getBotY() - getTopY()) * Math.random());
+                int x = (int)((getBotX() - getTopX()) * Math.random()+getTopX());
+                int y = (int)((getBotY() - getTopY()) * Math.random()+getTopY());
                 ship.move(x,y) ;
                 identifySquares(x,y,ship);
             }
