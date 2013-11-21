@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -20,28 +19,30 @@ public class Drawer {
     private OrthographicCamera camera;
     private SpriteBatch batch;
     private ArrayList<Sprite> sprites;
-    private Board board;
+    private Board boardLeft, boardRight;
     private Properties props = new Properties();
     private int screenWidth, screenHeight, tileSize;
     private Texture tileTexture, selectedTileTexture[];
     private TextureRegion cruiser, patrol, battleship, submarine, carrier;
-    private Button rotateRegion, autoButton;
+    private Button rotateRegion, autoButton, readyButton;
 
-    public Drawer(Board board, Button rotateRegion, Button autoButton) {
+    public Drawer(Board boardLeft, Board boardRight, Button rotateRegion, Button autoButton, Button readyButton) {
         try {
             props.load(Gdx.files.internal("data/config.properties").read());
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(10);
         }
-        this.board = board;
+        this.boardLeft = boardLeft;
+        this.boardRight = boardRight;
         this.rotateRegion = rotateRegion;
         this.autoButton = autoButton;
+        this.readyButton = readyButton;
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         // Set it to an orthographic projection with "y down"
         screenWidth = Gdx.graphics.getWidth();
         screenHeight = Gdx.graphics.getHeight();
-        tileSize = (int) board.dimensions.x / board.getSize();
+        tileSize = (int) boardLeft.dimensions.x / boardLeft.getSize();
         camera.setToOrtho(true, screenWidth, screenHeight);
         camera.update();
 
@@ -63,80 +64,42 @@ public class Drawer {
     public void drawSetup() {
 
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        /*
-         * batch.draw(board, Globals.GridLocation1.x, Globals.GridLocation1.y,
-         * Globals.GridSize1.x, Globals.GridSize1.y); for (int i = 0; i <
-         * player1.ships.dimensions(); i++) batch.draw(player1.ships.get(i).tex,
-         * player1.ships.get(i).x, player1.ships.get(i).y,
-         * player1.ships.get(i).width, player1.ships.get(i).height);
-         */
         // for (Sprite sprite : sprites) { sprite.draw(batch); }
 
-        // draw the setup grid
-        int tileSize = getTileSize();
-        for (int x = 0; x < board.getSize(); x++) {
-            for (int y = 0; y < board.getSize(); y++) {
-                batch.draw(tileTexture, x * tileSize + board.topLeft.x, y * tileSize + board.topLeft.y, tileSize,
-                        tileSize);
-            }
-        }
-
+        drawGrid(boardLeft);
         // draw rotate zone
         batch.draw(tileTexture, rotateRegion.topLeft.x, rotateRegion.topLeft.y, rotateRegion.dimensions.x,
                 rotateRegion.dimensions.y);
         // draw auto button
         batch.draw(tileTexture, autoButton.topLeft.x, autoButton.topLeft.y, autoButton.dimensions.x,
                 autoButton.dimensions.y);
+        // draw ready button
+        batch.draw(tileTexture, readyButton.topLeft.x, readyButton.topLeft.y, readyButton.dimensions.x,
+                readyButton.dimensions.y);
         // draw highlighted squares
-        for (int j = 0; j < board.getActiveSquares().length; j++) {
-            int which_texture = board.validShipPlacement ? 1 : 0;
-            if (board.getActiveSquares()[j]) {
-                batch.draw(selectedTileTexture[which_texture], board.getOnSquares()[j].x * tileSize + board.topLeft.x,
-                        board.getOnSquares()[j].y * tileSize + board.topLeft.y, tileSize, tileSize);
+        for (int j = 0; j < boardLeft.getActiveSquares().length; j++) {
+            int which_texture = boardLeft.validShipPlacement ? 1 : 0;
+            if (boardLeft.getActiveSquares()[j]) {
+                batch.draw(selectedTileTexture[which_texture], boardLeft.getOnSquares()[j].x * tileSize + boardLeft.topLeft.x,
+                        boardLeft.getOnSquares()[j].y * tileSize + boardLeft.topLeft.y, tileSize, tileSize);
             }
         }
-        // draw the ships
-        for (Ship ship : board.getShips()) {
-            TextureRegion shipTexture;
-            int orientationOrdinal = ship.getOrientation().getOrdinal();
-            switch (ship.getShipClass()) {
-            // TODO
-            case PATROL:
-                shipTexture = patrol;
-                break;
-            case CRUISER:
-                shipTexture = cruiser;
-                break;
-            case SUBMARINE:
-                shipTexture = submarine;
-                break;
-            case BATTLESHIP:
-                shipTexture = battleship;
-                break;
-            case CARRIER:
-            default:
-                shipTexture = carrier;
-                break;
-            }
-            switch (ship.getOrientation()) {
-            case HORIZONTAL:
-                batch.draw(shipTexture, ship.topLeft.x, ship.topLeft.y, ship.dimensions.x, ship.dimensions.y);
-                break;
-            case VERTICAL:
-            default:
-                Vector2 o_dim = ship.getOrigDimensions();
-                batch.draw(shipTexture, ship.center.x - o_dim.x / 2, ship.center.y - o_dim.y / 2, o_dim.x / 2,
-                        o_dim.y / 2, o_dim.x, o_dim.y, 1f, 1f, 90f);
-                break;
-            }
-
-            // draw selected
-
-        }
+        drawShips(boardLeft);
         batch.end();
+    }
+
+    public void drawGame() {
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        drawGrid(boardLeft);
+        drawShips(boardLeft);
+        drawGrid(boardRight);
+        drawShips(boardRight);
+        batch.end();
+
     }
 
     public void dispose() {
@@ -157,7 +120,7 @@ public class Drawer {
 
         // create border
         // Sprite p1GridBorder =
-        // createSprite("data/board/large_teal_border.png", 512, 512);
+        // createSprite("data/boardLeft/large_teal_border.png", 512, 512);
         // p1GridBorder.setSize(screenHeight * .75f, screenHeight * .75f);
         // bgSprite.setOrigin(bgSprite.getWidth() / 2, bgSprite.getHeight() /
         // 2);
@@ -194,6 +157,53 @@ public class Drawer {
     private static TextureRegion textureFlipper(TextureRegion texture) {
         texture.flip(false, true);
         return texture;
+    }
+
+    private void drawGrid(Board board){
+        int tileSize = getTileSize();
+        for (int x = 0; x < board.getSize(); x++) {
+            for (int y = 0; y < board.getSize(); y++) {
+                batch.draw(tileTexture, x * tileSize + board.topLeft.x, y * tileSize + board.topLeft.y, tileSize,
+                        tileSize);
+            }
+        }
+    }
+
+    private void drawShips(Board board){
+        for (Ship ship : board.getShips()) {
+            TextureRegion shipTexture;
+            switch (ship.getShipClass()) {
+                // TODO
+                case PATROL:
+                    shipTexture = patrol;
+                    break;
+                case CRUISER:
+                    shipTexture = cruiser;
+                    break;
+                case SUBMARINE:
+                    shipTexture = submarine;
+                    break;
+                case BATTLESHIP:
+                    shipTexture = battleship;
+                    break;
+                case CARRIER:
+                default:
+                    shipTexture = carrier;
+                    break;
+            }
+            switch (ship.getOrientation()) {
+                case HORIZONTAL:
+                    batch.draw(shipTexture, ship.topLeft.x, ship.topLeft.y, ship.dimensions.x, ship.dimensions.y);
+                    break;
+                case VERTICAL:
+                default:
+                    Vector2 o_dim = ship.getOrigDimensions();
+                    batch.draw(shipTexture, ship.center.x - o_dim.x / 2, ship.center.y - o_dim.y / 2, o_dim.x / 2,
+                            o_dim.y / 2, o_dim.x, o_dim.y, 1f, 1f, 90f);
+                    break;
+            }
+        }
+
     }
 
 }
