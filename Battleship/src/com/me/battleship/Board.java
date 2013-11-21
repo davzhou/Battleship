@@ -9,7 +9,8 @@ public class Board extends BaseObject {
 
     List<Ship> ships;
     List<Torpedo> torpedoes;
-    private int[][] myGrid;
+    private int[][] fillGrid;
+    private boolean[][] attackGrid;
     private int size, tileSize;
     int turns;
     boolean isActive, validShipPlacement;
@@ -25,7 +26,8 @@ public class Board extends BaseObject {
         super(x, y, u, v);
         name = n;
         this.size = size;
-        myGrid = new int[size][size];
+        fillGrid = new int[size][size];
+        attackGrid = new boolean[size][size];
         turns = 0;
         isActive = false;
         torpedoes = new ArrayList<Torpedo>();
@@ -50,40 +52,25 @@ public class Board extends BaseObject {
 
     public void emptyBoard() {
         for (int i = 0; i < size; i++)
-            for (int j = 0; j < size; j++)
-                myGrid[i][j] = Globals.EMPTY;
+            for (int j = 0; j < size; j++) {
+                fillGrid[i][j] = Globals.EMPTY;
+                attackGrid[i][j] = false;
+            }
         ships.clear();
-
     }
 
-    public int attackLocation(int x, int y) {
-
-        if (myGrid[x][y] < 0) // any negative square has already been targeted
-                              // before
-            return 0;
-        else if (myGrid[x][y] == 0) { // empty square
-            torpedoes.add(new Torpedo(x, y, Globals.AttackStatus.MISS));
-            return 1;
-        } else { // square has ship
-            torpedoes.add(new Torpedo(x, y, Globals.AttackStatus.HIT));
-            boolean gameFinished = true;
-            for (int i = 0; i < 10 && gameFinished; i++)
-                for (int j = 0; j < 10; j++)
-                    if (myGrid[i][j] > 0) {
-                        gameFinished = false;
-                        break;
-                    }
-            if (gameFinished) // all your ships are dead
-                return 3;
-            else
-                // you still have ships left
-                return 2;
-        }
+    public void attackLocation(int x, int y) {
+        int coord[] = pixel2Coord(x, y);
+        attackGrid[coord[0]][coord[1]] = true;
     }
 
     public int getSize() {
         return size;
 
+    }
+
+    public int getTileSize() {
+        return tileSize;
     }
 
     public void centerShipOnSquare(Ship s) {
@@ -130,7 +117,7 @@ public class Board extends BaseObject {
                         getOnSquares()[i].x = length + ship_length_offset;
                         getOnSquares()[i].y = width;
                         getActiveSquares()[i] = true;
-                        if (myGrid[length + ship_length_offset][width] != 0) {
+                        if (fillGrid[length + ship_length_offset][width] != 0) {
                             validShipPlacement = false;
                         }
 
@@ -159,7 +146,7 @@ public class Board extends BaseObject {
                         getOnSquares()[i].x = width;
                         getOnSquares()[i].y = length + ship_length_offset;
                         getActiveSquares()[i] = true;
-                        if (myGrid[width][length + ship_length_offset] != 0) {
+                        if (fillGrid[width][length + ship_length_offset] != 0) {
                             validShipPlacement = false;
                         }
 
@@ -187,6 +174,21 @@ public class Board extends BaseObject {
         return activeSquares;
     }
 
+    public boolean[][] getAttackGrid() {
+        return attackGrid;
+    }
+
+    public int[][] getFillGrid() {
+        return fillGrid;
+    }
+
+    public void selectSquare(int x, int y) {
+        int[] coord = pixel2Coord(x, y);
+        onSquares[0] = new Vector2((float)coord[0] * tileSize + topLeft.x,
+                (float)coord[1] * tileSize + topLeft.y);
+        activeSquares[0] = true;
+    }
+
     public void deselectSquares() {
         for (int i = 0; i < activeSquares.length; i++)
             activeSquares[i] = false;
@@ -195,7 +197,7 @@ public class Board extends BaseObject {
     public void placeShipOnGrid(Ship s) {
         for (int i = 0; i < activeSquares.length; i++) {
             if (activeSquares[i]) {
-                myGrid[(int) onSquares[i].x][(int) onSquares[i].y] = Globals.FILLED;
+                fillGrid[(int) onSquares[i].x][(int) onSquares[i].y] = Globals.FILLED;
                 s.getOnSquares()[i] = onSquares[i].cpy();
             }
         }
@@ -205,7 +207,7 @@ public class Board extends BaseObject {
     public void removeShipIfOnGrid(Ship s) {
         if (s.locationSet) {
             for (int i = 0; i < s.getShipClass().getLength(); i++) {
-                myGrid[(int) s.getOnSquares()[i].x][(int) s.getOnSquares()[i].y] = Globals.EMPTY;
+                fillGrid[(int) s.getOnSquares()[i].x][(int) s.getOnSquares()[i].y] = Globals.EMPTY;
             }
             s.locationSet = false;
         }
@@ -237,5 +239,12 @@ public class Board extends BaseObject {
             }
         }
         return true;
+    }
+
+    public int[] pixel2Coord(int x, int y){
+        int[] coord = new int[2];
+        coord[0] = (int)(Math.floor((x - topLeft.x) / tileSize));
+        coord[1] = (int)(Math.floor((y - topLeft.y) / tileSize));
+        return coord;
     }
 }

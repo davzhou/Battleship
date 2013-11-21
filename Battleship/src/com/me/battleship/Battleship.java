@@ -33,15 +33,15 @@ public class Battleship implements ApplicationListener, InputProcessor {
         isSetup = true;
         timeDragged = 0f;
         rotated = false;
-        t = new Torpedo(50, 50, Globals.AttackStatus.HIT);
-        player1 = new Board(Integer.valueOf(props.getProperty("grid.left.loc.x")), Integer.valueOf(props
-                .getProperty("grid.left.loc.y")), Integer.valueOf(props.getProperty("grid.dimensions.x")),
-                Integer.valueOf(props.getProperty("grid.dimensions.y")), "player1",
-                Integer.parseInt(props.getProperty("grid.size")));
-        player2 = new Board(Integer.valueOf(props.getProperty("grid.right.loc.x")), Integer.valueOf(props
-                .getProperty("grid.right.loc.y")), Integer.valueOf(props.getProperty("grid.dimensions.x")),
-                Integer.valueOf(props.getProperty("grid.dimensions.y")), "player2",
-                Integer.parseInt(props.getProperty("grid.size")));
+        int gridSize = Integer.parseInt(props.getProperty("grid.size"));
+        player1 = new Board(Integer.valueOf(props.getProperty("grid.left.loc.x")),
+                Integer.valueOf(props.getProperty("grid.left.loc.y")),
+                Integer.valueOf(props.getProperty("grid.dimensions.x")),
+                Integer.valueOf(props.getProperty("grid.dimensions.y")), "player1", gridSize);
+        player2 = new Board(Integer.valueOf(props.getProperty("grid.right.loc.x")),
+                Integer.valueOf(props.getProperty("grid.right.loc.y")),
+                Integer.valueOf(props.getProperty("grid.dimensions.x")),
+                Integer.valueOf(props.getProperty("grid.dimensions.y")), "player2", gridSize);
         rotateRegion = new Button(Integer.valueOf(props.getProperty("rotate.zone.loc.x")),
                 Integer.valueOf(props.getProperty("rotate.zone.loc.y")),
                 Integer.valueOf(props.getProperty("rotate.zone.size.x")),
@@ -55,8 +55,8 @@ public class Battleship implements ApplicationListener, InputProcessor {
                 Integer.valueOf(props.getProperty("ready.button.size.x")),
                 Integer.valueOf(props.getProperty("ready.button.size.y")));
         drawer = new Drawer(player1, player2, rotateRegion, autoButton, readyButton);
-        createShips(player1, drawer.getTileSize() * 9 / 10);
-        createShips(player2, drawer.getTileSize() * 9 / 10);
+        createShips(player1);
+        createShips(player2);
         Gdx.input.setInputProcessor(this);
     }
 
@@ -105,7 +105,10 @@ public class Battleship implements ApplicationListener, InputProcessor {
 
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
-        return false;
+        if (Globals.isInside(x, y, player2)) {
+            player2.selectSquare(x, y);
+        }
+        return true;
     }
 
     @Override
@@ -115,11 +118,9 @@ public class Battleship implements ApplicationListener, InputProcessor {
             if (selectedShip != null && player1.validShipPlacement && timeDragged > .1f) {
                 player1.centerShipOnSquare(selectedShip);
                 player1.placeShipOnGrid(selectedShip);
-                player1.deselectSquares();
             } else if (selectedShip != null) {
                 player1.removeShipIfOnGrid(selectedShip);
                 selectedShip.reset();
-                player1.deselectSquares();
             } else if (selectedShip == null && Globals.isInside(x, y, autoButton)) {
                 player1.autoPlace();
             } else if (selectedShip == null && Globals.isInside(x, y, readyButton) && player1.isAllPlaced()) {
@@ -134,10 +135,14 @@ public class Battleship implements ApplicationListener, InputProcessor {
                         return true;
                     }
             }
+            player1.deselectSquares();
             selectedShip = null;
             timeDragged = 0f;
         } else {
-            return true;
+            player2.deselectSquares();
+            if (Globals.isInside(x, y, player2)) {
+                player2.attackLocation(x, y);
+            }
         }
         return true;
 
@@ -166,7 +171,11 @@ public class Battleship implements ApplicationListener, InputProcessor {
                 player1.identifySquares(x, y, selectedShip);
             }
         } else {
-            return true;
+            if (Globals.isInside(x, y, player2)) {
+                player2.selectSquare(x, y);
+            } else {
+                player2.deselectSquares();
+            }
         }
         return true;
     }
@@ -185,12 +194,12 @@ public class Battleship implements ApplicationListener, InputProcessor {
         return Globals.isInside(x, y, s);
     }
 
-    private void createShips(Board player, int unitDimension) {
+    private void createShips(Board player) {
         String[] shipSizes = props.getProperty("grid.ships").split(",");
         for (int i = 0; i < shipSizes.length; i++) {
-            player.addShip(new Ship(Integer.valueOf(props.getProperty("ship.zone.loc.x")), i * unitDimension
+            player.addShip(new Ship(Integer.valueOf(props.getProperty("ship.zone.loc.x")), i * player.getTileSize()
                     + Integer.valueOf(props.getProperty("ship.zone.loc.y")),
-                    Ship.ShipClass.valueOf(shipSizes[i].trim()), Ship.Orientation.HORIZONTAL, unitDimension));
+                    Ship.ShipClass.valueOf(shipSizes[i].trim()), Ship.Orientation.HORIZONTAL, player.getTileSize()));
         }
     }
 

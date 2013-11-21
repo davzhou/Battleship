@@ -21,8 +21,8 @@ public class Drawer {
     private ArrayList<Sprite> sprites;
     private Board boardLeft, boardRight;
     private Properties props = new Properties();
-    private int screenWidth, screenHeight, tileSize;
-    private Texture tileTexture, selectedTileTexture[];
+    private int screenWidth, screenHeight;
+    private Texture tileTexture, selectedTileTexture[], cursorTexture, hit, miss;
     private TextureRegion[] cruiser, patrol, battleship, submarine, carrier;
     private Button rotateRegion, autoButton, readyButton;
 
@@ -42,7 +42,6 @@ public class Drawer {
         // Set it to an orthographic projection with "y down"
         screenWidth = Gdx.graphics.getWidth();
         screenHeight = Gdx.graphics.getHeight();
-        tileSize = (int) boardLeft.dimensions.x / boardLeft.getSize();
         camera.setToOrtho(true, screenWidth, screenHeight);
         camera.update();
 
@@ -79,6 +78,7 @@ public class Drawer {
         batch.draw(tileTexture, readyButton.topLeft.x, readyButton.topLeft.y, readyButton.dimensions.x,
                 readyButton.dimensions.y);
         // draw highlighted squares
+        int tileSize = boardLeft.getTileSize();
         for (int j = 0; j < boardLeft.getActiveSquares().length; j++) {
             int which_texture = boardLeft.validShipPlacement ? 1 : 0;
             if (boardLeft.getActiveSquares()[j]) {
@@ -110,16 +110,31 @@ public class Drawer {
         drawShips(boardLeft);
         drawGrid(boardRight);
         drawShips(boardRight);
+        int tileSize = boardRight.getTileSize();
+        for (int j = 0; j < boardRight.getActiveSquares().length; j++) {
+            if (boardRight.getActiveSquares()[j]) {
+                batch.draw(cursorTexture, boardRight.getOnSquares()[j].x , boardRight.getOnSquares()[j].y, tileSize, tileSize);
+            }
+        }
+
+        for (int i = 0; i < boardRight.getAttackGrid().length; i++) {
+            for (int j = 0; j < boardRight.getAttackGrid()[i].length; j++) {
+                if (boardRight.getAttackGrid()[i][j]) {
+                    if (boardRight.getFillGrid()[i][j] == Globals.FILLED) {
+                        batch.draw(hit, tileSize * i + boardRight.topLeft.x,
+                                tileSize * j + boardRight.topLeft.y, tileSize, tileSize);
+                    }
+                    batch.draw(miss, tileSize * i + boardRight.topLeft.x,
+                            tileSize * j + boardRight.topLeft.y, tileSize, tileSize);
+                }
+            }
+        }
         batch.end();
 
     }
 
     public void dispose() {
         batch.dispose();
-    }
-
-    public int getTileSize() {
-        return tileSize;
     }
 
     private void loadTextures() {
@@ -163,6 +178,10 @@ public class Drawer {
         selectedTileTexture = new Texture[2];
         selectedTileTexture[0] = new Texture(Gdx.files.internal(props.getProperty("texture.tile.invalid")));
         selectedTileTexture[1] = new Texture(Gdx.files.internal(props.getProperty("texture.tile.valid")));
+
+        cursorTexture = new Texture(Gdx.files.internal(props.getProperty("texture.cursor")));
+        hit = new Texture(Gdx.files.internal(props.getProperty("texture.hit")));
+        miss = new Texture(Gdx.files.internal(props.getProperty("texture.miss")));
     }
 
     private static TextureRegion[] textureFlipper(TextureRegion... textures) {
@@ -177,7 +196,7 @@ public class Drawer {
     }
 
     private void drawGrid(Board board) {
-        int tileSize = getTileSize();
+        int tileSize = board.getTileSize();
         for (int x = 0; x < board.getSize(); x++) {
             for (int y = 0; y < board.getSize(); y++) {
                 batch.draw(tileTexture, x * tileSize + board.topLeft.x, y * tileSize + board.topLeft.y, tileSize,
@@ -187,11 +206,8 @@ public class Drawer {
     }
 
     private void drawShips(Board board) {
-
         for (Ship ship : board.getShips()) {
-            TextureRegion shipTexture;
-            shipTexture = getShipTexture(ship, 0);
-            drawShip(ship, shipTexture);
+            drawShip(ship, getShipTexture(ship, 0));
         }
 
     }
