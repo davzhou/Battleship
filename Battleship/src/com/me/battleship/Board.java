@@ -9,7 +9,7 @@ public class Board extends BaseObject {
 
     List<Ship> ships;
     List<Torpedo> torpedoes;
-    private int[][] myGrid, enemyGrid;
+    private int[][] myGrid;
     private int size, tileSize;
     int turns;
     boolean isActive, validShipPlacement;
@@ -79,10 +79,6 @@ public class Board extends BaseObject {
                 // you still have ships left
                 return 2;
         }
-    }
-
-    public void setEnemy(int[][] e) {
-        enemyGrid = e;
     }
 
     public int getSize() {
@@ -232,5 +228,14 @@ public class Board extends BaseObject {
             placeShipOnGrid(ship);
             deselectSquares();
         }
+    }
+
+    public boolean isAllPlaced() {
+        for (Ship ship : ships) {
+            if (!ship.locationSet) {
+                return false;
+            }
+        }
+        return true;
     }
 }
