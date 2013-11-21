@@ -117,7 +117,7 @@ public class Board extends BaseObject {
         float odd_length_adj = (ship_length + 1) % 2 * tileSize / 2;
         int length, width;
         float min_bound, max_bound;
-        validShipPlacement = true;
+        validShipPlacement = false;
         switch (s.getOrientation()) {
         case HORIZONTAL:
 
@@ -126,6 +126,7 @@ public class Board extends BaseObject {
             min_bound = topLeft.y;
             max_bound = topLeft.y + dimensions.y;
             if (y >= min_bound && y < max_bound) {
+                validShipPlacement = true;
                 for (int i = 0; i < s.getShipClass().getLength(); i++) {
 
                     if (length + ship_length_offset >= 0 && length + ship_length_offset < getSize()
@@ -153,6 +154,7 @@ public class Board extends BaseObject {
             min_bound = topLeft.x;
             max_bound = topLeft.x + dimensions.x;
             if (x >= min_bound && x < max_bound) {
+                validShipPlacement = true;
                 for (int i = 0; i < s.getShipClass().getLength(); i++) {
                     if (length + ship_length_offset >= 0 && length + ship_length_offset < getSize()
                             && myGrid[width][length + ship_length_offset] == 0) {
