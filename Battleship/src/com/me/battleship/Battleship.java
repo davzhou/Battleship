@@ -57,7 +57,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
     public void render() {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-        drawer.drawSetup();
+        drawer.drawSetup(selectedShip);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
             player1.removeShipIfOnGrid(selectedShip);
             selectedShip.reset();
             player1.deselectSquares();
-        } else if (selectedShip == null && Globals.isInside(x, y, autoButton)){
+        } else if (selectedShip == null && Globals.isInside(x, y, autoButton)) {
             player1.autoPlace();
         } else {
             for (int i = 0; i < player1.ships.size(); i++)

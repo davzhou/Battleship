@@ -24,7 +24,7 @@ public class Drawer {
     private Properties props = new Properties();
     private int screenWidth, screenHeight, tileSize;
     private Texture tileTexture, selectedTileTexture[];
-    private TextureRegion cruiser, patrol, battleship, submarine, carrier;
+    private TextureRegion[] cruiser, patrol, battleship, submarine, carrier;
     private Button rotateRegion, autoButton;
 
     public Drawer(Board board, Button rotateRegion, Button autoButton) {
@@ -60,7 +60,7 @@ public class Drawer {
 
     }
 
-    public void drawSetup() {
+    public void drawSetup(Ship selectedShip) {
 
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
@@ -101,41 +101,23 @@ public class Drawer {
         // draw the ships
         for (Ship ship : board.getShips()) {
             TextureRegion shipTexture;
-            int orientationOrdinal = ship.getOrientation().getOrdinal();
-            switch (ship.getShipClass()) {
-            // TODO
-            case PATROL:
-                shipTexture = patrol;
-                break;
-            case CRUISER:
-                shipTexture = cruiser;
-                break;
-            case SUBMARINE:
-                shipTexture = submarine;
-                break;
-            case BATTLESHIP:
-                shipTexture = battleship;
-                break;
-            case CARRIER:
-            default:
-                shipTexture = carrier;
-                break;
+            if (ship == selectedShip) {
+                continue;
             }
-            switch (ship.getOrientation()) {
-            case HORIZONTAL:
-                batch.draw(shipTexture, ship.topLeft.x, ship.topLeft.y, ship.dimensions.x, ship.dimensions.y);
-                break;
-            case VERTICAL:
-            default:
-                Vector2 o_dim = ship.getOrigDimensions();
-                batch.draw(shipTexture, ship.center.x - o_dim.x / 2, ship.center.y - o_dim.y / 2, o_dim.x / 2,
-                        o_dim.y / 2, o_dim.x, o_dim.y, 1f, 1f, 90f);
-                break;
-            }
-
-            // draw selected
-
+            shipTexture = getShipTexture(ship, 0);
+            drawShip(ship, shipTexture);
         }
+
+        if (selectedShip != null) {
+            TextureRegion shipTexture;
+            if (board.validShipPlacement) {
+                shipTexture = getShipTexture(selectedShip, 0);
+            } else {
+                shipTexture = getShipTexture(selectedShip, 1);
+            }
+            drawShip(selectedShip, shipTexture);
+        }
+
         batch.end();
     }
 
@@ -172,11 +154,16 @@ public class Drawer {
 
         Texture shipTextures;
         shipTextures = new Texture(Gdx.files.internal(props.getProperty("texture.ships")));
-        patrol = textureFlipper(new TextureRegion(shipTextures, 0, 0, 52, 32));
-        cruiser = textureFlipper(new TextureRegion(shipTextures, 0, 40, 78, 28));
-        submarine = textureFlipper(new TextureRegion(shipTextures, 0, 80, 91, 25));
-        battleship = textureFlipper(new TextureRegion(shipTextures, 0, 120, 116, 27));
-        carrier = textureFlipper(new TextureRegion(shipTextures, 0, 160, 123, 31));
+        patrol = textureFlipper(new TextureRegion(shipTextures, 0, 0, 52, 32), new TextureRegion(shipTextures, 0, 200,
+                52, 32));
+        cruiser = textureFlipper(new TextureRegion(shipTextures, 0, 40, 78, 28), new TextureRegion(shipTextures, 0,
+                240, 78, 28));
+        submarine = textureFlipper(new TextureRegion(shipTextures, 0, 80, 91, 25), new TextureRegion(shipTextures, 0,
+                280, 91, 25));
+        battleship = textureFlipper(new TextureRegion(shipTextures, 0, 120, 116, 27), new TextureRegion(shipTextures,
+                0, 320, 116, 27));
+        carrier = textureFlipper(new TextureRegion(shipTextures, 0, 160, 123, 31), new TextureRegion(shipTextures, 0,
+                360, 123, 31));
         // TODO
 
         tileTexture = new Texture(Gdx.files.internal(props.getProperty("texture.tile.empty")));
@@ -196,4 +183,34 @@ public class Drawer {
         return texture;
     }
 
+    private TextureRegion getShipTexture(Ship s, int color) {
+        switch (s.getShipClass()) {
+        // TODO
+        case PATROL:
+            return patrol[color];
+        case CRUISER:
+            return cruiser[color];
+        case SUBMARINE:
+            return submarine[color];
+        case BATTLESHIP:
+            return battleship[color];
+        case CARRIER:
+        default:
+            return carrier[color];
+        }
+    }
+
+    private void drawShip(Ship ship, TextureRegion shipTexture) {
+        switch (ship.getOrientation()) {
+        case HORIZONTAL:
+            batch.draw(shipTexture, ship.topLeft.x, ship.topLeft.y, ship.dimensions.x, ship.dimensions.y);
+            break;
+        case VERTICAL:
+        default:
+            Vector2 o_dim = ship.getOrigDimensions();
+            batch.draw(shipTexture, ship.center.x - o_dim.x / 2, ship.center.y - o_dim.y / 2, o_dim.x / 2, o_dim.y / 2,
+                    o_dim.x, o_dim.y, 1f, 1f, 90f);
+            break;
+        }
+    }
 }

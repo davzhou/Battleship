@@ -129,12 +129,14 @@ public class Board extends BaseObject {
                 validShipPlacement = true;
                 for (int i = 0; i < s.getShipClass().getLength(); i++) {
 
-                    if (length + ship_length_offset >= 0 && length + ship_length_offset < getSize()
-                            && myGrid[length + ship_length_offset][width] == 0) {
+                    if (length + ship_length_offset >= 0 && length + ship_length_offset < getSize()) {
 
                         getOnSquares()[i].x = length + ship_length_offset;
                         getOnSquares()[i].y = width;
                         getActiveSquares()[i] = true;
+                        if (myGrid[length + ship_length_offset][width] != 0) {
+                            validShipPlacement = false;
+                        }
 
                     } else {
                         getActiveSquares()[i] = false;
@@ -156,12 +158,14 @@ public class Board extends BaseObject {
             if (x >= min_bound && x < max_bound) {
                 validShipPlacement = true;
                 for (int i = 0; i < s.getShipClass().getLength(); i++) {
-                    if (length + ship_length_offset >= 0 && length + ship_length_offset < getSize()
-                            && myGrid[width][length + ship_length_offset] == 0) {
+                    if (length + ship_length_offset >= 0 && length + ship_length_offset < getSize()) {
 
                         getOnSquares()[i].x = width;
                         getOnSquares()[i].y = length + ship_length_offset;
                         getActiveSquares()[i] = true;
+                        if (myGrid[width][length + ship_length_offset] != 0) {
+                            validShipPlacement = false;
+                        }
 
                     } else {
                         getActiveSquares()[i] = false;
@@ -216,13 +220,13 @@ public class Board extends BaseObject {
             validShipPlacement = false;
             while (!validShipPlacement) {
                 removeShipIfOnGrid(ship);
-                if (Math.random() > .5){
+                if (Math.random() > .5) {
                     ship.changeOrientation();
                 }
-                int x = (int)((getBotX() - getTopX()) * Math.random()+getTopX());
-                int y = (int)((getBotY() - getTopY()) * Math.random()+getTopY());
-                ship.move(x,y) ;
-                identifySquares(x,y,ship);
+                int x = (int) ((getBotX() - getTopX()) * Math.random() + getTopX());
+                int y = (int) ((getBotY() - getTopY()) * Math.random() + getTopY());
+                ship.move(x, y);
+                identifySquares(x, y, ship);
             }
             centerShipOnSquare(ship);
             placeShipOnGrid(ship);
