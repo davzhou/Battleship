@@ -109,23 +109,25 @@ public class Drawer {
         drawGrid(boardLeft);
         drawShips(boardLeft);
         drawGrid(boardRight);
-        drawShips(boardRight);
+        drawSunkShips(boardRight);
         int tileSize = boardRight.getTileSize();
         for (int j = 0; j < boardRight.getActiveSquares().length; j++) {
             if (boardRight.getActiveSquares()[j]) {
-                batch.draw(cursorTexture, boardRight.getOnSquares()[j].x , boardRight.getOnSquares()[j].y, tileSize, tileSize);
+                batch.draw(cursorTexture, boardRight.getOnSquares()[j].x, boardRight.getOnSquares()[j].y, tileSize * 3,
+                        tileSize * 3);
             }
         }
 
-        for (int i = 0; i < boardRight.getAttackGrid().length; i++) {
-            for (int j = 0; j < boardRight.getAttackGrid()[i].length; j++) {
-                if (boardRight.getAttackGrid()[i][j]) {
-                    if (boardRight.getFillGrid()[i][j] == Globals.FILLED) {
-                        batch.draw(hit, tileSize * i + boardRight.topLeft.x,
-                                tileSize * j + boardRight.topLeft.y, tileSize, tileSize);
+        for (int i = 0; i < boardRight.getFillGrid().length; i++) {
+            for (int j = 0; j < boardRight.getFillGrid()[i].length; j++) {
+                if (boardRight.getFillGrid()[i][j] < 0) {
+                    if (boardRight.getFillGrid()[i][j] == -Globals.EMPTY) {
+                        batch.draw(miss, tileSize * i + boardRight.topLeft.x, tileSize * j + boardRight.topLeft.y,
+                                tileSize, tileSize);
+                    } else {
+                        batch.draw(hit, tileSize * i + boardRight.topLeft.x, tileSize * j + boardRight.topLeft.y,
+                                tileSize, tileSize);
                     }
-                    batch.draw(miss, tileSize * i + boardRight.topLeft.x,
-                            tileSize * j + boardRight.topLeft.y, tileSize, tileSize);
                 }
             }
         }
@@ -210,6 +212,14 @@ public class Drawer {
             drawShip(ship, getShipTexture(ship, 0));
         }
 
+    }
+
+    private void drawSunkShips(Board board) {
+        for (Ship ship : board.getShips()) {
+            if (ship.isSunk()) {
+                drawShip(ship, getShipTexture(ship, 0));
+            }
+        }
     }
 
     private TextureRegion getShipTexture(Ship s, int color) {

@@ -34,25 +34,20 @@ public class Battleship implements ApplicationListener, InputProcessor {
         timeDragged = 0f;
         rotated = false;
         int gridSize = Integer.parseInt(props.getProperty("grid.size"));
-        player1 = new Board(Integer.valueOf(props.getProperty("grid.left.loc.x")),
-                Integer.valueOf(props.getProperty("grid.left.loc.y")),
-                Integer.valueOf(props.getProperty("grid.dimensions.x")),
+        player1 = new Board(Integer.valueOf(props.getProperty("grid.left.loc.x")), Integer.valueOf(props
+                .getProperty("grid.left.loc.y")), Integer.valueOf(props.getProperty("grid.dimensions.x")),
                 Integer.valueOf(props.getProperty("grid.dimensions.y")), "player1", gridSize);
-        player2 = new Board(Integer.valueOf(props.getProperty("grid.right.loc.x")),
-                Integer.valueOf(props.getProperty("grid.right.loc.y")),
-                Integer.valueOf(props.getProperty("grid.dimensions.x")),
+        player2 = new Board(Integer.valueOf(props.getProperty("grid.right.loc.x")), Integer.valueOf(props
+                .getProperty("grid.right.loc.y")), Integer.valueOf(props.getProperty("grid.dimensions.x")),
                 Integer.valueOf(props.getProperty("grid.dimensions.y")), "player2", gridSize);
-        rotateRegion = new Button(Integer.valueOf(props.getProperty("rotate.zone.loc.x")),
-                Integer.valueOf(props.getProperty("rotate.zone.loc.y")),
-                Integer.valueOf(props.getProperty("rotate.zone.size.x")),
+        rotateRegion = new Button(Integer.valueOf(props.getProperty("rotate.zone.loc.x")), Integer.valueOf(props
+                .getProperty("rotate.zone.loc.y")), Integer.valueOf(props.getProperty("rotate.zone.size.x")),
                 Integer.valueOf(props.getProperty("rotate.zone.size.y")));
-        autoButton = new Button(Integer.valueOf(props.getProperty("auto.button.loc.x")),
-                Integer.valueOf(props.getProperty("auto.button.loc.y")),
-                Integer.valueOf(props.getProperty("auto.button.size.x")),
+        autoButton = new Button(Integer.valueOf(props.getProperty("auto.button.loc.x")), Integer.valueOf(props
+                .getProperty("auto.button.loc.y")), Integer.valueOf(props.getProperty("auto.button.size.x")),
                 Integer.valueOf(props.getProperty("auto.button.size.y")));
-        readyButton = new Button(Integer.valueOf(props.getProperty("ready.button.loc.x")),
-                Integer.valueOf(props.getProperty("ready.button.loc.y")),
-                Integer.valueOf(props.getProperty("ready.button.size.x")),
+        readyButton = new Button(Integer.valueOf(props.getProperty("ready.button.loc.x")), Integer.valueOf(props
+                .getProperty("ready.button.loc.y")), Integer.valueOf(props.getProperty("ready.button.size.x")),
                 Integer.valueOf(props.getProperty("ready.button.size.y")));
         drawer = new Drawer(player1, player2, rotateRegion, autoButton, readyButton);
         createShips(player1);
@@ -105,10 +100,13 @@ public class Battleship implements ApplicationListener, InputProcessor {
 
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
-        if (Globals.isInside(x, y, player2)) {
-            player2.selectSquare(x, y);
-        }
-        return true;
+        /*
+         * if (Globals.isInside(x, y, player2)) {
+         * player2.selectSquare(x, y);
+         * }
+         * return true;
+         */
+        return false;
     }
 
     @Override
@@ -126,8 +124,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
             } else if (selectedShip == null && Globals.isInside(x, y, readyButton) && player1.isAllPlaced()) {
                 player2.autoPlace();
                 isSetup = false;
-            }
-            else {
+            } else {
                 for (int i = 0; i < player1.ships.size(); i++)
                     if (touchedShip(player1.ships.get(i), x, y)) {
                         player1.removeShipIfOnGrid(player1.ships.get(i));
