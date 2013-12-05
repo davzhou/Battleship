@@ -46,6 +46,7 @@ public class Ship extends BaseObject {
     private ShipClass shipClass;
     private Orientation orientation, originalOrientation;
     private Vector2 originalCenter, originalDimensions, onSquares[];
+    private int unhitSquares;
 
     public boolean locationSet;
 
@@ -58,6 +59,7 @@ public class Ship extends BaseObject {
         originalDimensions = dimensions.cpy();
         locationSet = false;
         onSquares = new Vector2[shipClass.getLength()];
+        unhitSquares = shipClass.getLength();
 
     }
 
@@ -96,4 +98,14 @@ public class Ship extends BaseObject {
         locationSet = false;
     }
 
+    public boolean isSunk(){
+        if (unhitSquares==0){
+            return true;
+        }
+        return false;
+    }
+
+    public void hitShip(){
+        unhitSquares--;
+    }
 }

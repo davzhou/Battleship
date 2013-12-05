@@ -2,7 +2,7 @@ package com.me.battleship;
 
 import com.badlogic.gdx.math.Vector2;
 
-public abstract class BaseObject {
+public class BaseObject {
     Vector2 center, topLeft, dimensions;
 
     protected BaseObject() {
