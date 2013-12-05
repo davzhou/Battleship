@@ -23,7 +23,7 @@ public class Drawer {
     private Properties props = new Properties();
     private int screenWidth, screenHeight, tileSize;
     private Texture tileTexture, selectedTileTexture[];
-    private TextureRegion[] cruiser, patrol, battleship, submarine, carrier;
+    private TextureRegion[] cruiser, patrol, battleship, submarine, carrier, arrows;
     private Button rotateRegion, autoButton, readyButton;
 
     public Drawer(Board boardLeft, Board boardRight, Button rotateRegion, Button autoButton, Button readyButton) {
@@ -102,14 +102,15 @@ public class Drawer {
         batch.end();
     }
 
-    public void drawGame() {
+    public void drawGame(boolean turn) {
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         drawGrid(boardLeft);
-        drawShips(boardLeft);
         drawGrid(boardRight);
         drawShips(boardRight);
+        drawOther(turn);
+
         batch.end();
 
     }
@@ -163,6 +164,10 @@ public class Drawer {
         selectedTileTexture = new Texture[2];
         selectedTileTexture[0] = new Texture(Gdx.files.internal(props.getProperty("texture.tile.invalid")));
         selectedTileTexture[1] = new Texture(Gdx.files.internal(props.getProperty("texture.tile.valid")));
+
+        Texture arrowTextures;
+        arrowTextures= new Texture(Gdx.files.internal(props.getProperty("texture.arrows")));
+        arrows = textureFlipper(new TextureRegion(arrowTextures, 0, 0, 53, 53), new TextureRegion(arrowTextures,0, 53, 53, 53));
     }
 
     private static TextureRegion[] textureFlipper(TextureRegion... textures) {
@@ -184,6 +189,7 @@ public class Drawer {
                         tileSize);
             }
         }
+        drawShips(board);
     }
 
     private void drawShips(Board board) {
@@ -225,5 +231,9 @@ public class Drawer {
                     o_dim.x, o_dim.y, 1f, 1f, 90f);
             break;
         }
+    }
+
+    private void drawOther(int turn){
+        arrows[]
     }
 }

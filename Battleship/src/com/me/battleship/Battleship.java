@@ -16,7 +16,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
 
     private Ship selectedShip;
     private float timeDragged;
-    private boolean rotated;
+    private boolean rotated, playerTurn;
     private Drawer drawer;
     private Properties props = new Properties();
     private Button rotateRegion, autoButton, readyButton;
@@ -72,7 +72,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
         if (isSetup) {
             drawer.drawSetup(selectedShip);
         } else {
-            drawer.drawGame();
+            drawer.drawGame(playerTurn);
         }
     }
 
