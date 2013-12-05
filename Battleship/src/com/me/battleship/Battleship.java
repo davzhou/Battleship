@@ -16,10 +16,11 @@ public class Battleship implements ApplicationListener, InputProcessor {
 
     private Ship selectedShip;
     private float timeDragged;
-    private boolean rotated, playerTurn;
+    private boolean rotated;
+    private int turns;
     private Drawer drawer;
     private Properties props = new Properties();
-    private Button rotateRegion, autoButton, readyButton;
+    private Button rotateRegion, autoButton, readyButton, turnArrow;
     private boolean isSetup;
 
     @Override
@@ -40,18 +41,14 @@ public class Battleship implements ApplicationListener, InputProcessor {
         player2 = new Board(Integer.valueOf(props.getProperty("grid.right.loc.x")), Integer.valueOf(props
                 .getProperty("grid.right.loc.y")), Integer.valueOf(props.getProperty("grid.dimensions.x")),
                 Integer.valueOf(props.getProperty("grid.dimensions.y")), "player2", gridSize);
-        rotateRegion = new Button(Integer.valueOf(props.getProperty("rotate.zone.loc.x")), Integer.valueOf(props
-                .getProperty("rotate.zone.loc.y")), Integer.valueOf(props.getProperty("rotate.zone.size.x")),
-                Integer.valueOf(props.getProperty("rotate.zone.size.y")));
-        autoButton = new Button(Integer.valueOf(props.getProperty("auto.button.loc.x")), Integer.valueOf(props
-                .getProperty("auto.button.loc.y")), Integer.valueOf(props.getProperty("auto.button.size.x")),
-                Integer.valueOf(props.getProperty("auto.button.size.y")));
-        readyButton = new Button(Integer.valueOf(props.getProperty("ready.button.loc.x")), Integer.valueOf(props
-                .getProperty("ready.button.loc.y")), Integer.valueOf(props.getProperty("ready.button.size.x")),
-                Integer.valueOf(props.getProperty("ready.button.size.y")));
-        drawer = new Drawer(player1, player2, rotateRegion, autoButton, readyButton);
+        rotateRegion = initializeButton("rotate.zone");
+        autoButton = initializeButton("auto.button");
+        readyButton = initializeButton("ready.button");
+        turnArrow = initializeButton("arrow.button");
+        drawer = new Drawer(player1, player2, rotateRegion, autoButton, readyButton, turnArrow);
         createShips(player1);
         createShips(player2);
+        turns=0;
         Gdx.input.setInputProcessor(this);
     }
 
@@ -67,7 +64,7 @@ public class Battleship implements ApplicationListener, InputProcessor {
         if (isSetup) {
             drawer.drawSetup(selectedShip);
         } else {
-            drawer.drawGame(playerTurn);
+            drawer.drawGame(turns);
         }
     }
 
@@ -138,7 +135,9 @@ public class Battleship implements ApplicationListener, InputProcessor {
         } else {
             player2.deselectSquares();
             if (Globals.isInside(x, y, player2)) {
-                player2.attackLocation(x, y);
+                if (player2.attackLocation(x, y)){
+                    turns++;
+                }
             }
         }
         return true;
@@ -198,6 +197,12 @@ public class Battleship implements ApplicationListener, InputProcessor {
                     + Integer.valueOf(props.getProperty("ship.zone.loc.y")),
                     Ship.ShipClass.valueOf(shipSizes[i].trim()), Ship.Orientation.HORIZONTAL, player.getTileSize()));
         }
+    }
+
+    private Button initializeButton(String name){
+        return new Button(Integer.valueOf(props.getProperty(name+".loc.x")), Integer.valueOf(props
+                .getProperty(name+".loc.y")), Integer.valueOf(props.getProperty(name+".size.x")),
+                Integer.valueOf(props.getProperty(name+".size.y")));
     }
 
 }

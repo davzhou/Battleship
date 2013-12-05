@@ -12,7 +12,6 @@ public class Board extends BaseObject {
     private int[][] fillGrid;
     // private boolean[][] attackGrid;
     private int size, tileSize;
-    int turns;
     boolean isActive, validShipPlacement;
     String name;
     private Vector2[] onSquares;
@@ -33,7 +32,6 @@ public class Board extends BaseObject {
             }
         }
         // attackGrid = new boolean[size][size];
-        turns = 0;
         isActive = false;
         torpedoes = new ArrayList<Torpedo>();
         ships = new ArrayList<Ship>();

@@ -24,9 +24,10 @@ public class Drawer {
     private int screenWidth, screenHeight;
     private Texture tileTexture, selectedTileTexture[], cursorTexture, hit, miss;
     private TextureRegion[] cruiser, patrol, battleship, submarine, carrier, arrows;
-    private Button rotateRegion, autoButton, readyButton;
+    private Button rotateRegion, autoButton, readyButton, turnArrow;
 
-    public Drawer(Board boardLeft, Board boardRight, Button rotateRegion, Button autoButton, Button readyButton) {
+    public Drawer(Board boardLeft, Board boardRight, Button rotateRegion, Button autoButton, Button readyButton,
+            Button turnArrow) {
         try {
             props.load(Gdx.files.internal("data/config.properties").read());
         } catch (IOException e) {
@@ -38,6 +39,7 @@ public class Drawer {
         this.rotateRegion = rotateRegion;
         this.autoButton = autoButton;
         this.readyButton = readyButton;
+        this.turnArrow = turnArrow;
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         // Set it to an orthographic projection with "y down"
         screenWidth = Gdx.graphics.getWidth();
@@ -102,20 +104,14 @@ public class Drawer {
         batch.end();
     }
 
-    public void drawGame(boolean turn) {
+    public void drawGame(int turns) {
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        drawGrid(boardLeft);
-        drawGrid(boardRight);
-        drawSunkShips(boardRight);
+        drawOwnBoard(boardLeft);
+        drawEnemyBoard(boardRight);
+
         int tileSize = boardRight.getTileSize();
-        for (int j = 0; j < boardRight.getActiveSquares().length; j++) {
-            if (boardRight.getActiveSquares()[j]) {
-                batch.draw(cursorTexture, boardRight.getOnSquares()[j].x, boardRight.getOnSquares()[j].y, tileSize * 3,
-                        tileSize * 3);
-            }
-        }
 
         for (int i = 0; i < boardRight.getFillGrid().length; i++) {
             for (int j = 0; j < boardRight.getFillGrid()[i].length; j++) {
@@ -130,7 +126,14 @@ public class Drawer {
                 }
             }
         }
-        drawOther(turn);
+
+        for (int j = 0; j < boardRight.getActiveSquares().length; j++) {
+            if (boardRight.getActiveSquares()[j]) {
+                batch.draw(cursorTexture, boardRight.getOnSquares()[j].x, boardRight.getOnSquares()[j].y, tileSize * 3,
+                        tileSize * 3);
+            }
+        }
+        drawOther(turns);
 
         batch.end();
 
@@ -187,8 +190,9 @@ public class Drawer {
         miss = new Texture(Gdx.files.internal(props.getProperty("texture.miss")));
 
         Texture arrowTextures;
-        arrowTextures= new Texture(Gdx.files.internal(props.getProperty("texture.arrows")));
-        arrows = textureFlipper(new TextureRegion(arrowTextures, 0, 0, 53, 53), new TextureRegion(arrowTextures,0, 53, 53, 53));
+        arrowTextures = new Texture(Gdx.files.internal(props.getProperty("texture.arrow")));
+        arrows = textureFlipper(new TextureRegion(arrowTextures, 0, 0, 53, 53), new TextureRegion(arrowTextures, 0, 53,
+                53, 53));
     }
 
     private static TextureRegion[] textureFlipper(TextureRegion... textures) {
@@ -210,7 +214,16 @@ public class Drawer {
                         tileSize);
             }
         }
+    }
+
+    private void drawOwnBoard(Board board) {
+        drawGrid(board);
         drawShips(board);
+    }
+
+    private void drawEnemyBoard(Board board) {
+        drawGrid(board);
+        drawSunkShips(board);
     }
 
     private void drawShips(Board board) {
@@ -259,7 +272,8 @@ public class Drawer {
         }
     }
 
-    private void drawOther(int turn){
-        arrows[]
+    private void drawOther(int turns) {
+        batch.draw(arrows[turns % 2], turnArrow.topLeft.x, turnArrow.topLeft.y, turnArrow.dimensions.x,
+                turnArrow.dimensions.y);
     }
 }
