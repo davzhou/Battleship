@@ -108,30 +108,13 @@ public class Drawer {
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        drawOwnBoard(boardLeft);
-        drawEnemyBoard(boardRight);
 
-        int tileSize = boardRight.getTileSize();
-
-        for (int i = 0; i < boardRight.getFillGrid().length; i++) {
-            for (int j = 0; j < boardRight.getFillGrid()[i].length; j++) {
-                if (boardRight.getFillGrid()[i][j] < 0) {
-                    if (boardRight.getFillGrid()[i][j] == -Globals.EMPTY) {
-                        batch.draw(miss, tileSize * i + boardRight.topLeft.x, tileSize * j + boardRight.topLeft.y,
-                                tileSize, tileSize);
-                    } else {
-                        batch.draw(hit, tileSize * i + boardRight.topLeft.x, tileSize * j + boardRight.topLeft.y,
-                                tileSize, tileSize);
-                    }
-                }
-            }
-        }
-
-        for (int j = 0; j < boardRight.getActiveSquares().length; j++) {
-            if (boardRight.getActiveSquares()[j]) {
-                batch.draw(cursorTexture, boardRight.getOnSquares()[j].x, boardRight.getOnSquares()[j].y, tileSize * 3,
-                        tileSize * 3);
-            }
+        if ((turns + 1) % 2 == 0) {
+            drawOwnBoard(boardLeft);
+            drawEnemyBoard(boardRight);
+        } else {
+            drawOwnBoard(boardRight);
+            drawEnemyBoard(boardLeft);
         }
         drawOther(turns);
 
@@ -219,11 +202,14 @@ public class Drawer {
     private void drawOwnBoard(Board board) {
         drawGrid(board);
         drawShips(board);
+        drawAttacks(board);
     }
 
     private void drawEnemyBoard(Board board) {
         drawGrid(board);
         drawSunkShips(board);
+        drawAttacks(board);
+        drawCursor(board);
     }
 
     private void drawShips(Board board) {
@@ -275,5 +261,34 @@ public class Drawer {
     private void drawOther(int turns) {
         batch.draw(arrows[turns % 2], turnArrow.topLeft.x, turnArrow.topLeft.y, turnArrow.dimensions.x,
                 turnArrow.dimensions.y);
+    }
+
+    private void drawAttacks(Board board) {
+        int tileSize = board.getTileSize();
+
+        for (int i = 0; i < board.getFillGrid().length; i++) {
+            for (int j = 0; j < board.getFillGrid()[i].length; j++) {
+                if (board.getFillGrid()[i][j] < 0) {
+                    if (board.getFillGrid()[i][j] == -Globals.EMPTY) {
+                        batch.draw(miss, tileSize * i + board.topLeft.x, tileSize * j + board.topLeft.y, tileSize,
+                                tileSize);
+                    } else {
+                        batch.draw(hit, tileSize * i + board.topLeft.x, tileSize * j + board.topLeft.y, tileSize,
+                                tileSize);
+                    }
+                }
+            }
+        }
+    }
+
+    private void drawCursor(Board board) {
+        int tileSize = board.getTileSize();
+
+        for (int j = 0; j < board.getActiveSquares().length; j++) {
+            if (board.getActiveSquares()[j]) {
+                batch.draw(cursorTexture, board.getOnSquares()[j].x, board.getOnSquares()[j].y, tileSize * 3,
+                        tileSize * 3);
+            }
+        }
     }
 }
