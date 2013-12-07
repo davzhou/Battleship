@@ -19,27 +19,27 @@ public class Drawer {
     private OrthographicCamera camera;
     private SpriteBatch batch;
     private ArrayList<Sprite> sprites;
-    private Board boardLeft, boardRight;
+    private Board boards[];
     private Properties props = new Properties();
-    private int screenWidth, screenHeight;
+    private int screenWidth, screenHeight, numPlayers;
     private Texture tileTexture, selectedTileTexture[], cursorTexture, hit, miss;
     private TextureRegion[] cruiser, patrol, battleship, submarine, carrier, arrows;
     private Button rotateRegion, autoButton, readyButton, turnArrow;
 
-    public Drawer(Board boardLeft, Board boardRight, Button rotateRegion, Button autoButton, Button readyButton,
-            Button turnArrow) {
+    public Drawer(Board boards[], Button rotateRegion, Button autoButton, Button readyButton, Button turnArrow,
+            int numPlayers) {
         try {
             props.load(Gdx.files.internal("data/config.properties").read());
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(10);
         }
-        this.boardLeft = boardLeft;
-        this.boardRight = boardRight;
+        this.boards = boards;
         this.rotateRegion = rotateRegion;
         this.autoButton = autoButton;
         this.readyButton = readyButton;
         this.turnArrow = turnArrow;
+        this.numPlayers = numPlayers;
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         // Set it to an orthographic projection with "y down"
         screenWidth = Gdx.graphics.getWidth();
@@ -69,7 +69,7 @@ public class Drawer {
         batch.begin();
         // for (Sprite sprite : sprites) { sprite.draw(batch); }
 
-        drawGrid(boardLeft);
+        drawGrid(boards[0]);
         // draw rotate zone
         batch.draw(tileTexture, rotateRegion.topLeft.x, rotateRegion.topLeft.y, rotateRegion.dimensions.x,
                 rotateRegion.dimensions.y);
@@ -80,21 +80,21 @@ public class Drawer {
         batch.draw(tileTexture, readyButton.topLeft.x, readyButton.topLeft.y, readyButton.dimensions.x,
                 readyButton.dimensions.y);
         // draw highlighted squares
-        int tileSize = boardLeft.getTileSize();
-        for (int j = 0; j < boardLeft.getActiveSquares().length; j++) {
-            int which_texture = boardLeft.validShipPlacement ? 1 : 0;
-            if (boardLeft.getActiveSquares()[j]) {
-                batch.draw(selectedTileTexture[which_texture], boardLeft.getOnSquares()[j].x * tileSize
-                        + boardLeft.topLeft.x, boardLeft.getOnSquares()[j].y * tileSize + boardLeft.topLeft.y,
+        int tileSize = boards[0].getTileSize();
+        for (int j = 0; j < boards[0].getActiveSquares().length; j++) {
+            int which_texture = boards[0].validShipPlacement ? 1 : 0;
+            if (boards[0].getActiveSquares()[j]) {
+                batch.draw(selectedTileTexture[which_texture], boards[0].getOnSquares()[j].x * tileSize
+                        + boards[0].topLeft.x, boards[0].getOnSquares()[j].y * tileSize + boards[0].topLeft.y,
                         tileSize, tileSize);
             }
         }
 
-        drawShips(boardLeft);
+        drawShips(boards[0]);
 
         if (selectedShip != null) {
             TextureRegion shipTexture;
-            if (boardLeft.validShipPlacement) {
+            if (boards[0].validShipPlacement) {
                 shipTexture = getShipTexture(selectedShip, 0);
             } else {
                 shipTexture = getShipTexture(selectedShip, 1);
@@ -109,13 +109,9 @@ public class Drawer {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        if ((turns + 1) % 2 == 0) {
-            drawOwnBoard(boardLeft);
-            drawEnemyBoard(boardRight);
-        } else {
-            drawOwnBoard(boardRight);
-            drawEnemyBoard(boardLeft);
-        }
+        drawOwnBoard(boards[(turns + 1) % numPlayers]);
+        drawEnemyBoard(boards[turns % numPlayers]);
+
         drawOther(turns);
 
         batch.end();

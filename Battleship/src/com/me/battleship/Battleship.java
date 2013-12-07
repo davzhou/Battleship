@@ -12,12 +12,12 @@ public class Battleship implements ApplicationListener, InputProcessor {
 
     private Torpedo t;// test
 
-    private Board player[], setup;
+    private Board players[], setup;
 
     private Ship selectedShip;
     private float timeDragged;
     private boolean rotated;
-    private int turns;
+    private int turns, numPlayers;
     private Drawer drawer;
     private Properties props = new Properties();
     private Button rotateRegion, autoButton, readyButton, turnArrow;
@@ -34,21 +34,22 @@ public class Battleship implements ApplicationListener, InputProcessor {
         isSetup = true;
         timeDragged = 0f;
         rotated = false;
+        numPlayers = Integer.valueOf(props.getProperty("numberOfPlayers"));
         int gridSize = Integer.parseInt(props.getProperty("grid.size"));
-        player = new Board[2];
-        player[0] = new Board(Integer.valueOf(props.getProperty("grid.left.loc.x")), Integer.valueOf(props
+        players = new Board[numPlayers];
+        players[0] = new Board(Integer.valueOf(props.getProperty("grid.left.loc.x")), Integer.valueOf(props
                 .getProperty("grid.left.loc.y")), Integer.valueOf(props.getProperty("grid.dimensions.x")),
                 Integer.valueOf(props.getProperty("grid.dimensions.y")), "player1", gridSize);
-        player[1] = new Board(Integer.valueOf(props.getProperty("grid.right.loc.x")), Integer.valueOf(props
+        players[1] = new Board(Integer.valueOf(props.getProperty("grid.right.loc.x")), Integer.valueOf(props
                 .getProperty("grid.right.loc.y")), Integer.valueOf(props.getProperty("grid.dimensions.x")),
                 Integer.valueOf(props.getProperty("grid.dimensions.y")), "player2", gridSize);
         rotateRegion = initializeButton("rotate.zone");
         autoButton = initializeButton("auto.button");
         readyButton = initializeButton("ready.button");
         turnArrow = initializeButton("arrow.button");
-        drawer = new Drawer(player[0], player[1], rotateRegion, autoButton, readyButton, turnArrow);
-        createShips(player[0]);
-        createShips(player[1]);
+        drawer = new Drawer(players, rotateRegion, autoButton, readyButton, turnArrow, numPlayers);
+        createShips(players[0]);
+        createShips(players[1]);
         turns=0;
         Gdx.input.setInputProcessor(this);
     }
@@ -111,32 +112,32 @@ public class Battleship implements ApplicationListener, InputProcessor {
     public boolean touchUp(int x, int y, int pointer, int button) {
 
         if (isSetup) {
-            if (selectedShip != null && player[0].validShipPlacement && timeDragged > .1f) {
-                player[0].centerShipOnSquare(selectedShip);
-                player[0].placeShipOnGrid(selectedShip);
+            if (selectedShip != null && players[0].validShipPlacement && timeDragged > .1f) {
+                players[0].centerShipOnSquare(selectedShip);
+                players[0].placeShipOnGrid(selectedShip);
             } else if (selectedShip != null) {
-                player[0].removeShipIfOnGrid(selectedShip);
+                players[0].removeShipIfOnGrid(selectedShip);
                 selectedShip.reset();
             } else if (selectedShip == null && Globals.isInside(x, y, autoButton)) {
-                player[0].autoPlace();
-            } else if (selectedShip == null && Globals.isInside(x, y, readyButton) && player[0].isAllPlaced()) {
-                player[1].autoPlace();
+                players[0].autoPlace();
+            } else if (selectedShip == null && Globals.isInside(x, y, readyButton) && players[0].isAllPlaced()) {
+                players[1].autoPlace();
                 isSetup = false;
             } else {
-                for (int i = 0; i < player[0].ships.size(); i++)
-                    if (touchedShip(player[0].ships.get(i), x, y)) {
-                        player[0].removeShipIfOnGrid(player[0].ships.get(i));
-                        player[0].ships.get(i).reset();
+                for (int i = 0; i < players[0].ships.size(); i++)
+                    if (touchedShip(players[0].ships.get(i), x, y)) {
+                        players[0].removeShipIfOnGrid(players[0].ships.get(i));
+                        players[0].ships.get(i).reset();
                         return true;
                     }
             }
-            player[0].deselectSquares();
+            players[0].deselectSquares();
             selectedShip = null;
             timeDragged = 0f;
         } else {
-            player[turns%2].deselectSquares();
-            if (Globals.isInside(x, y, player[turns%2])) {
-                if (player[turns%2].attackLocation(x, y)){
+            players[turns%numPlayers].deselectSquares();
+            if (Globals.isInside(x, y, players[turns%numPlayers])) {
+                if (players[turns%numPlayers].attackLocation(x, y)){
                     turns++;
                 }
             }
@@ -149,10 +150,10 @@ public class Battleship implements ApplicationListener, InputProcessor {
     public boolean touchDragged(int x, int y, int pointer) {
         if (isSetup) {
             if (selectedShip == null) {
-                for (Ship ship : player[0].getShips()) {
+                for (Ship ship : players[0].getShips()) {
                     if (touchedShip(ship, x, y)) {
                         selectedShip = ship;
-                        player[0].removeShipIfOnGrid(selectedShip);
+                        players[0].removeShipIfOnGrid(selectedShip);
                         return true;
                     }
                 }
@@ -165,13 +166,13 @@ public class Battleship implements ApplicationListener, InputProcessor {
                 } else if (rotated && !Globals.isInside(x, y, rotateRegion)) {
                     rotated = false;
                 }
-                player[0].identifySquares(x, y, selectedShip);
+                players[0].identifySquares(x, y, selectedShip);
             }
         } else {
-            if (Globals.isInside(x, y, player[turns%2])) {
-                player[turns%2].selectSquare(x, y);
+            if (Globals.isInside(x, y, players[turns%2])) {
+                players[turns%2].selectSquare(x, y);
             } else {
-                player[turns%2].deselectSquares();
+                players[turns%2].deselectSquares();
             }
         }
         return true;
