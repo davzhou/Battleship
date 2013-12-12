@@ -10,15 +10,32 @@ public class Board extends BaseObject {
     List<Ship> ships;
     List<Torpedo> torpedoes;
     private int[][] fillGrid;
-    // private boolean[][] attackGrid;
     private int size, tileSize;
     boolean isActive, validShipPlacement;
     String name;
     private Vector2[] onSquares;
     private boolean[] activeSquares;
+    private boolean isAI;
 
     public List<Ship> getShips() {
         return ships;
+    }
+
+    public boolean isAI() {
+        return isAI;
+    }
+
+    public void setAI(boolean AI) {
+        isAI = AI;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Board(int x, int y, int u, int v, String n, int size, boolean ai) {
+        this(x, y, u, v, n, size);
+        setAI(ai);
     }
 
     public Board(int x, int y, int u, int v, String n, int size) {
@@ -31,15 +48,10 @@ public class Board extends BaseObject {
                 fillGrid[i][j] = Globals.EMPTY;
             }
         }
-        // attackGrid = new boolean[size][size];
         isActive = false;
         torpedoes = new ArrayList<Torpedo>();
         ships = new ArrayList<Ship>();
         tileSize = u / size;
-        /*
-         * for (int i = 0; i < Globals.numShips; i++) { ships.add(new
-         * Ship(Globals.shipsRequired[i], Globals.HORIZONTAL)); }
-         */
 
         onSquares = new Vector2[5]; // TODO
         for (int i = 0; i < onSquares.length; i++) {
@@ -57,14 +69,12 @@ public class Board extends BaseObject {
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++) {
                 fillGrid[i][j] = Globals.EMPTY;
-                // attackGrid[i][j] = false;
             }
         ships.clear();
     }
 
     public boolean attackLocation(int x, int y) {
         int coord[] = pixel2Coord(x, y);
-        // attackGrid[coord[0]][coord[1]] = true;
         int gridValue = fillGrid[coord[0]][coord[1]];
         if (gridValue >= 0) {
             if (gridValue > Globals.EMPTY) {
@@ -74,6 +84,12 @@ public class Board extends BaseObject {
             return true;
         }
         return false;
+    }
+
+    public boolean attackLocation() {
+        int x = (int) ((getBotX() - getTopX()) * Math.random() + getTopX());
+        int y = (int) ((getBotY() - getTopY()) * Math.random() + getTopY());
+        return attackLocation(x, y);
     }
 
     public int getSize() {
@@ -186,12 +202,6 @@ public class Board extends BaseObject {
         return activeSquares;
     }
 
-    /*
-     * public boolean[][] getAttackGrid() {
-     * return attackGrid;
-     * }
-     */
-
     public int[][] getFillGrid() {
         return fillGrid;
     }
@@ -258,6 +268,15 @@ public class Board extends BaseObject {
     public boolean isAllPlaced() {
         for (Ship ship : ships) {
             if (!ship.locationSet) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isGameOver() {
+        for (Ship ship : ships) {
+            if (!ship.isSunk()) {
                 return false;
             }
         }

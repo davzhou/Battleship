@@ -21,17 +21,26 @@ public class Battleship implements ApplicationListener, InputProcessor {
     private Drawer drawer;
     private Properties props = new Properties();
     private Button rotateRegion, autoButton, readyButton, turnArrow;
-    private boolean isSetup;
+    private GameState gameState;
+
+    public enum GameState {
+        MENU, SETUP, GAME, GAMEOVER;
+    }
 
     @Override
     public void create() {
+        Gdx.input.setInputProcessor(this);
+        startNewGame();
+    }
+
+    public void startNewGame() {
         try {
             props.load(Gdx.files.internal("data/config.properties").read());
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(10);
         }
-        isSetup = true;
+        gameState = GameState.SETUP;
         timeDragged = 0f;
         rotated = false;
         numPlayers = Integer.valueOf(props.getProperty("player.numbers"));
@@ -39,10 +48,10 @@ public class Battleship implements ApplicationListener, InputProcessor {
         players = new Board[numPlayers];
         players[0] = new Board(Integer.valueOf(props.getProperty("grid.left.loc.x")), Integer.valueOf(props
                 .getProperty("grid.left.loc.y")), Integer.valueOf(props.getProperty("grid.dimensions.x")),
-                Integer.valueOf(props.getProperty("grid.dimensions.y")), "player1", gridSize);
+                Integer.valueOf(props.getProperty("grid.dimensions.y")), "player1", gridSize, true);
         players[1] = new Board(Integer.valueOf(props.getProperty("grid.right.loc.x")), Integer.valueOf(props
                 .getProperty("grid.right.loc.y")), Integer.valueOf(props.getProperty("grid.dimensions.x")),
-                Integer.valueOf(props.getProperty("grid.dimensions.y")), "player2", gridSize);
+                Integer.valueOf(props.getProperty("grid.dimensions.y")), "player2", gridSize, false);
         rotateRegion = initializeButton("rotate.zone");
         autoButton = initializeButton("auto.button");
         readyButton = initializeButton("ready.button");
@@ -51,7 +60,6 @@ public class Battleship implements ApplicationListener, InputProcessor {
         createShips(players[0]);
         createShips(players[1]);
         turns=0;
-        Gdx.input.setInputProcessor(this);
     }
 
     @Override
@@ -63,10 +71,28 @@ public class Battleship implements ApplicationListener, InputProcessor {
     public void render() {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-        if (isSetup) {
-            drawer.drawSetup(selectedShip);
-        } else {
-            drawer.drawGame(turns);
+
+
+        switch (gameState) {
+            case SETUP:
+                drawer.drawSetup(selectedShip);
+                break;
+            case GAME:
+                Board p = players[(turns) % numPlayers];
+                if (p.isGameOver()) {
+                    gameState = GameState.GAMEOVER;
+                    break;
+                }
+                if (p.isAI()) {
+                    if(p.attackLocation()) {
+                        turns++;
+                    }
+                }
+                drawer.drawGame(turns);
+                break;
+            case GAMEOVER:
+            default:
+                drawer.drawGameOver(turns);
         }
     }
 
@@ -111,36 +137,42 @@ public class Battleship implements ApplicationListener, InputProcessor {
     @Override
     public boolean touchUp(int x, int y, int pointer, int button) {
 
-        if (isSetup) {
-            if (selectedShip != null && players[0].validShipPlacement && timeDragged > .1f) {
-                players[0].centerShipOnSquare(selectedShip);
-                players[0].placeShipOnGrid(selectedShip);
-            } else if (selectedShip != null) {
-                players[0].removeShipIfOnGrid(selectedShip);
-                selectedShip.reset();
-            } else if (selectedShip == null && Globals.isInside(x, y, autoButton)) {
-                players[0].autoPlace();
-            } else if (selectedShip == null && Globals.isInside(x, y, readyButton) && players[0].isAllPlaced()) {
-                players[1].autoPlace();
-                isSetup = false;
-            } else {
-                for (int i = 0; i < players[0].ships.size(); i++)
-                    if (touchedShip(players[0].ships.get(i), x, y)) {
-                        players[0].removeShipIfOnGrid(players[0].ships.get(i));
-                        players[0].ships.get(i).reset();
-                        return true;
-                    }
-            }
-            players[0].deselectSquares();
-            selectedShip = null;
-            timeDragged = 0f;
-        } else {
-            players[turns%numPlayers].deselectSquares();
-            if (Globals.isInside(x, y, players[turns%numPlayers])) {
-                if (players[turns%numPlayers].attackLocation(x, y)){
-                    turns++;
+        switch (gameState) {
+            case SETUP:
+                if (selectedShip != null && players[0].validShipPlacement && timeDragged > .1f) {
+                    players[0].centerShipOnSquare(selectedShip);
+                    players[0].placeShipOnGrid(selectedShip);
+                } else if (selectedShip != null) {
+                    players[0].removeShipIfOnGrid(selectedShip);
+                    selectedShip.reset();
+                } else if (selectedShip == null && Globals.isInside(x, y, autoButton)) {
+                    players[0].autoPlace();
+                } else if (selectedShip == null && Globals.isInside(x, y, readyButton) && players[0].isAllPlaced()) {
+                    players[1].autoPlace();
+                    gameState = GameState.GAME;
+                } else {
+                    for (int i = 0; i < players[0].ships.size(); i++)
+                        if (touchedShip(players[0].ships.get(i), x, y)) {
+                            players[0].removeShipIfOnGrid(players[0].ships.get(i));
+                            players[0].ships.get(i).reset();
+                            return true;
+                        }
                 }
-            }
+                players[0].deselectSquares();
+                selectedShip = null;
+                timeDragged = 0f;
+                break;
+            case GAME:
+                players[turns%numPlayers].deselectSquares();
+                if (Globals.isInside(x, y, players[turns%numPlayers])) {
+                    if (players[turns%numPlayers].attackLocation(x, y)){
+                        turns++;
+                    }
+                }
+                break;
+            case GAMEOVER:
+            default:
+                startNewGame();
         }
         return true;
 
@@ -148,32 +180,36 @@ public class Battleship implements ApplicationListener, InputProcessor {
 
     @Override
     public boolean touchDragged(int x, int y, int pointer) {
-        if (isSetup) {
-            if (selectedShip == null) {
-                for (Ship ship : players[0].getShips()) {
-                    if (touchedShip(ship, x, y)) {
-                        selectedShip = ship;
-                        players[0].removeShipIfOnGrid(selectedShip);
-                        return true;
+        switch (gameState) {
+            case SETUP:
+                if (selectedShip == null) {
+                    for (Ship ship : players[0].getShips()) {
+                        if (touchedShip(ship, x, y)) {
+                            selectedShip = ship;
+                            players[0].removeShipIfOnGrid(selectedShip);
+                            return true;
+                        }
                     }
+                } else {
+                    timeDragged += Gdx.graphics.getDeltaTime();
+                    selectedShip.move(x, y);
+                    if (!rotated && Globals.isInside(x, y, rotateRegion)) {
+                        rotated = true;
+                        selectedShip.changeOrientation();
+                    } else if (rotated && !Globals.isInside(x, y, rotateRegion)) {
+                        rotated = false;
+                    }
+                    players[0].identifySquares(x, y, selectedShip);
                 }
-            } else {
-                timeDragged += Gdx.graphics.getDeltaTime();
-                selectedShip.move(x, y);
-                if (!rotated && Globals.isInside(x, y, rotateRegion)) {
-                    rotated = true;
-                    selectedShip.changeOrientation();
-                } else if (rotated && !Globals.isInside(x, y, rotateRegion)) {
-                    rotated = false;
+                break;
+            case GAME:
+                if (Globals.isInside(x, y, players[turns%2])) {
+                    players[turns%2].selectSquare(x, y);
+                } else {
+                    players[turns%2].deselectSquares();
                 }
-                players[0].identifySquares(x, y, selectedShip);
-            }
-        } else {
-            if (Globals.isInside(x, y, players[turns%2])) {
-                players[turns%2].selectSquare(x, y);
-            } else {
-                players[turns%2].deselectSquares();
-            }
+                break;
+            default:
         }
         return true;
     }
