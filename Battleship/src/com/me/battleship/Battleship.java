@@ -78,15 +78,14 @@ public class Battleship implements ApplicationListener, InputProcessor {
                 drawer.drawSetup(selectedShip);
                 break;
             case GAME:
-                Board p = players[(turns) % numPlayers];
-                if (p.isGameOver()) {
+                Board player = getActivePlayer();
+                if (player.isAI()) {
+                    while(!player.attackLocation()) {}
+                    turns++;
+                }
+                if (player.isGameOver()) {
                     gameState = GameState.GAMEOVER;
                     break;
-                }
-                if (p.isAI()) {
-                    if(p.attackLocation()) {
-                        turns++;
-                    }
                 }
                 drawer.drawGame(turns);
                 break;
@@ -125,13 +124,12 @@ public class Battleship implements ApplicationListener, InputProcessor {
 
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
-        /*
-         * if (Globals.isInside(x, y, player2)) {
-         * player2.selectSquare(x, y);
-         * }
-         * return true;
-         */
-        return false;
+        Board player = getActivePlayer();
+
+        if (Globals.isInside(x, y, player)) {
+           player.selectSquare(x, y);
+        }
+        return true;
     }
 
     @Override
@@ -163,9 +161,10 @@ public class Battleship implements ApplicationListener, InputProcessor {
                 timeDragged = 0f;
                 break;
             case GAME:
-                players[turns%numPlayers].deselectSquares();
-                if (Globals.isInside(x, y, players[turns%numPlayers])) {
-                    if (players[turns%numPlayers].attackLocation(x, y)){
+                Board player = getActivePlayer();
+                player.deselectSquares();
+                if (Globals.isInside(x, y, player)) {
+                    if (player.attackLocation(x, y)){
                         turns++;
                     }
                 }
@@ -203,10 +202,11 @@ public class Battleship implements ApplicationListener, InputProcessor {
                 }
                 break;
             case GAME:
-                if (Globals.isInside(x, y, players[turns%2])) {
-                    players[turns%2].selectSquare(x, y);
+                Board player = getActivePlayer();
+                if (Globals.isInside(x, y, player)) {
+                    player.selectSquare(x, y);
                 } else {
-                    players[turns%2].deselectSquares();
+                    player.deselectSquares();
                 }
                 break;
             default:
@@ -241,6 +241,10 @@ public class Battleship implements ApplicationListener, InputProcessor {
         return new Button(Integer.valueOf(props.getProperty(name+".loc.x")), Integer.valueOf(props
                 .getProperty(name+".loc.y")), Integer.valueOf(props.getProperty(name+".size.x")),
                 Integer.valueOf(props.getProperty(name+".size.y")));
+    }
+
+    private Board getActivePlayer() {
+        return players[turns % numPlayers];
     }
 
 }

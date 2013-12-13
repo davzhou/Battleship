@@ -68,4 +68,5 @@ local.properties
 >>>>>>> 2fbb154649d51fc5d575392db52e71bd3052d6cc
 !*-html/war/WEB-INF/web.xml
 *-html/.gwt
+*/.log
 ############
