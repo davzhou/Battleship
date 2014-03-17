@@ -1,18 +1,12 @@
 package com.me.battleship;
 
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.Game;
 
-import java.io.IOException;
-import java.util.Properties;
 
-public class Battleship implements ApplicationListener, InputProcessor {
+public class Battleship extends Game {
 
-    private Torpedo t;// test
+    private StartScreen startScreen;
 
-    private Board players[], setup;
 
     private Ship selectedShip;
     private float timeDragged;

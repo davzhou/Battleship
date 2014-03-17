@@ -289,4 +289,13 @@ public class Board extends BaseObject {
         coord[1] = (int) (Math.floor((y - topLeft.y) / tileSize));
         return coord;
     }
+
+    public boolean hasLost(){
+        for (Ship ship : ships){
+            if (!ship.isSunk()){
+                return false;
+            }
+        }
+        return true;
+    }
 }
