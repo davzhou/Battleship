@@ -36,7 +36,7 @@ public class BattleshipScreen implements Screen, InputProcessor {
         isSetup = true;
         timeDragged = 0f;
         rotated = false;
-        numPlayers = Integer.valueOf(props.getProperty("numberOfPlayers"));
+        numPlayers = Integer.valueOf(props.getProperty("player.numbers"));
         int gridSize = Integer.parseInt(props.getProperty("grid.size"));
         players = new Board[numPlayers];
         players[0] = new Board(Integer.valueOf(props.getProperty("grid.left.loc.x")), Integer.valueOf(props
