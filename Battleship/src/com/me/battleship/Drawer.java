@@ -115,7 +115,17 @@ public class Drawer {
         drawOther(turns);
 
         batch.end();
+    }
 
+    public void drawGameOver(int turns) {
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+
+        drawOwnBoard(boards[(turns + 1) % numPlayers]);
+        drawOwnBoard(boards[turns % numPlayers]);
+
+        batch.end();
     }
 
     public void dispose() {
